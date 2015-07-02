@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+  
+    <SurfaceView
+         android:id="@+id/surfaceView"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent" />
+    
+    <ImageView 
+        android:id="@+id/cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <RelativeLayout 
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:id="@+id/bottomBar"
+        android:layout_alignParentBottom="true"
+        android:background="#70000000"
+        >
+        <TextView 
+            android:id="@+id/cancelBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:text="取消"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            />
+        
+        <ImageView 
+            android:id="@+id/operatorBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/qq_shortvideo_preview_play"
+            />
+        
+        <TextView 
+            android:id="@+id/chooseBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:text="发送"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            />
+    </RelativeLayout>
+    
+</RelativeLayout>

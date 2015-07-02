@@ -1,0 +1,57 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".MainActivity" >
+    
+    <com.example.videodemo.FadingView
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+         />
+
+     <SeekBar
+         android:id="@+id/seekBar"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:maxHeight="12dp"
+         android:minHeight="12dp"
+         android:progressDrawable="@drawable/qq_seekbar_progress"
+         android:paddingLeft="10dp"
+         android:paddingRight="10dp"
+         android:thumb="@drawable/seekbar_thumb"
+         android:thumbOffset="10dp"
+         />
+
+     
+     <Button 
+         android:id="@+id/previewBtn"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:text="预览界面"
+         android:textColor="#FFFFFF"
+         android:layout_below="@+id/seekBar"
+         />
+     
+     <Button 
+         android:id="@+id/playBtn"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:text="播放界面"
+         android:textColor="#FFFFFF"
+         android:layout_marginTop="20dp"
+         android:layout_below="@+id/previewBtn"
+         />
+     
+     <Button 
+         android:id="@+id/testBtn"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:text="工具接口"
+         android:textColor="#FFFFFF"
+         android:layout_marginTop="20dp"
+         android:layout_below="@+id/playBtn"
+         />
+</RelativeLayout>
