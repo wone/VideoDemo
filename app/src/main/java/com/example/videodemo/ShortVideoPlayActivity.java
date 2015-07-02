@@ -38,7 +38,7 @@ import android.widget.Toast;
 import java.io.File;
 
 public class ShortVideoPlayActivity extends Activity implements OnClickListener, OnCompletionListener, OnErrorListener, SurfaceHolder.Callback {
-	static final String TAG = "ShortVideoPlayActivity";
+	static final String TAG = "VideoDemo.ShortVideoPlayActivity";
 
 	public static String PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Movies" + File.separator + "5.mp4";
 

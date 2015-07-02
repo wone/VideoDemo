@@ -23,10 +23,8 @@ public class MainActivity extends Activity implements OnClickListener{
 		this.findViewById(R.id.previewBtn).setOnClickListener(this);
 		this.findViewById(R.id.playBtn).setOnClickListener(this);
 		this.findViewById(R.id.testBtn).setOnClickListener(this);
-		
-//		mBgView = (FadingView) findViewById(R.id.background);
-//		mBgView.setDuration(800);
-//		mBgView.startFading();
+		this.findViewById(R.id.floatVideoBtn).setOnClickListener(this);
+
 	}
 
 	@Override
@@ -44,6 +42,9 @@ public class MainActivity extends Activity implements OnClickListener{
 		case R.id.testBtn:
 			startActivity(new Intent(this, TestActivity.class));
 			overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out); 
+			break;
+		case R.id.floatVideoBtn:
+			startActivity(new Intent(this, FloatVideoActivity.class));
 			break;
 		}
 	}
