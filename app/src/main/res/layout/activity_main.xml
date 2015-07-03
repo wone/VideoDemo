@@ -59,9 +59,19 @@
         android:id="@+id/floatVideoBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="悬浮视频"
+        android:text="悬浮视频1"
         android:textColor="#FFFFFF"
         android:layout_marginTop="20dp"
         android:layout_below="@+id/testBtn"
+        />
+
+    <Button
+        android:id="@+id/floatVideo2Btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="悬浮视频2"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/floatVideoBtn"
         />
 </RelativeLayout>

@@ -24,7 +24,7 @@ public class MainActivity extends Activity implements OnClickListener{
 		this.findViewById(R.id.playBtn).setOnClickListener(this);
 		this.findViewById(R.id.testBtn).setOnClickListener(this);
 		this.findViewById(R.id.floatVideoBtn).setOnClickListener(this);
-
+        this.findViewById(R.id.floatVideo2Btn).setOnClickListener(this);
 	}
 
 	@Override
@@ -46,6 +46,9 @@ public class MainActivity extends Activity implements OnClickListener{
 		case R.id.floatVideoBtn:
 			startActivity(new Intent(this, FloatVideoActivity.class));
 			break;
+        case R.id.floatVideo2Btn:
+            startActivity(new Intent(this, FloatVideo2Activity.class));
+            break;
 		}
 	}
 

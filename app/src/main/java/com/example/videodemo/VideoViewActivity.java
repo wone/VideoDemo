@@ -5,7 +5,6 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
 import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -22,7 +21,7 @@ public class VideoViewActivity extends Activity {
 		video = (VideoView) findViewById(R.id.video);
 		
 		
-		Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" +R.raw.video1);
+		Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" +R.raw.video5);
 		
 		MediaController mc = new MediaController(this); // 创建一个MediaController对象
 		

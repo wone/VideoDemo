@@ -1,17 +1,20 @@
 package com.example.videodemo;
 
-import java.io.File;
-import java.io.IOException;
-
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
+import android.os.Environment;
 import android.util.Log;
+
+import java.io.File;
 
 public class Utils {
 
 	private static final String TAG = "Utils";
-	
+
+	public static final String PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Movies" + File.separator + "5.mp4";
+
+
 	 /**
 	  * 获取视频的缩略图
 	  * 先通过ThumbnailUtils来创建一个视频的缩略图，然后再利用ThumbnailUtils来生成指定大小的缩略图。

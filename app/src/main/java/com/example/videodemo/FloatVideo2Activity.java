@@ -1,17 +1,18 @@
 package com.example.videodemo;
 
-import android.app.Service;
+import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.IBinder;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -19,10 +20,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 
 
-public class FloatVideoService extends Service implements MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
+
+public class FloatVideo2Activity extends Activity  {
 
     private static final String TAG = "VideoDemo.FloatService";
 
@@ -31,54 +34,135 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
     public final static int PLAY_STATE_PAUSE = 2;
     public final static int PLAY_STATE_ERROR = 3;
 
-    private int mPlayState = PLAY_STATE_IDLE;
+    private  static int mPlayState = PLAY_STATE_IDLE;
 
-    private Context mContext;
-    private WindowManager mWindowManager;
-    private RelativeLayout mContainer;
-    private SurfaceView mSurfaceView;
+    private static Context mContext;
+    private static WindowManager mWindowManager;
+    private static RelativeLayout mContainer;
+    private static SurfaceView mSurfaceView;
 
-    private MediaPlayer mMediaPlayer;
+    private static MediaPlayer mMediaPlayer;
 
-    private int mSurfaceViewWidth;
-    private int mSurfaceViewHeight;
+    private static int mSurfaceViewWidth;
+    private static int mSurfaceViewHeight;
 
+
+//    private static String mVideoPath = Utils.PATH;
+
+    private static boolean mRunning = false;
 
     @Override
-    public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_float_video);
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+        mContext = this.getApplicationContext();
 
-        mContext = this;
 
-        Log.d(TAG, "onCreate");
+        final Button operateBtn = (Button) findViewById(R.id.operateBtn);
 
-        initFloatUI();
-    }
+        if (mRunning) {
+            operateBtn.setText("stop");
+        } else {
+            operateBtn.setText("start");
+        }
 
-    private void initFloatUI(){
-        mContainer = new RelativeLayout(this);
-        mContainer.setBackgroundColor(Color.BLUE);
-        mContainer.setOnClickListener(new View.OnClickListener() {
+        operateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FloatVideoService.this.stopSelf();
+                if (!mRunning) {
+
+                    if (initFloatUI()) {
+                        mRunning = true;
+                        operateBtn.setText("stop");
+                    }
+
+                } else {
+                    removeFloatUI();
+
+                    mRunning = false;
+                    operateBtn.setText("start");
+                }
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_float_video, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Called after {@link #onRestoreInstanceState}, {@link #onRestart}, or
+     * {@link #onPause}, for your activity to start interacting with the user.
+     * This is a good place to begin animations, open exclusive-access devices
+     * (such as the camera), etc.
+     * <p/>
+     * <p>Keep in mind that onResume is not the best indicator that your activity
+     * is visible to the user; a system window such as the keyguard may be in
+     * front.  Use {@link #onWindowFocusChanged} to know for certain that your
+     * activity is visible to the user (for example, to resume a game).
+     * <p/>
+     * <p><em>Derived classes must call through to the super class's
+     * implementation of this method.  If they do not, an exception will be
+     * thrown.</em></p>
+     *
+     * @see #onRestoreInstanceState
+     * @see #onRestart
+     * @see #onPostResume
+     * @see #onPause
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mContext = this.getApplicationContext();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mContext = this.getApplicationContext();
+    }
+
+
+    private static boolean initFloatUI(){
+        if (mContext == null) {
+            Log.e(TAG, "initFloatUi, mContext == null");
+            return false;
+        }
+
+        mContainer = new RelativeLayout(mContext);
+        mContainer.setBackgroundColor(Color.BLUE);
+//        mContainer.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                removeFloatUI();
+//            }
+//        });
 //        mContainer.setBackgroundResource(R.drawable.ic_launcher);
 
-//        TextView tv = new TextView(this);
-//        tv.setText("test 123");
-//        mContainer.addView(tv);
-//        mContainer.requestDisallowInterceptTouchEvent(true);
 
         initVideo();
 
-        mWindowManager = (WindowManager)getSystemService(WINDOW_SERVICE);
+        mWindowManager = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
 
         final WindowManager.LayoutParams paramsF = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -125,9 +209,29 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
             }
         });
 
+        return true;
     }
 
-    private void initVideo(){
+    static void removeFloatUI(){
+        if (mWindowManager != null && mContainer != null) {
+            mWindowManager.removeView(mContainer);
+//            mContainer = null;
+//            mWindowManager = null;
+        }
+    }
+
+    private static void initVideo(){
+//        if (TextUtils.isEmpty(mVideoPath)) {
+//            Toast.makeText(mContext, mVideoPath + " empty!", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        File file = new File(mVideoPath);
+//        if (!file.exists() || file.length() == 0) {
+//            Toast.makeText(mContext, mVideoPath + " no exists!", Toast.LENGTH_SHORT).show();
+//            Log.e(TAG, mVideoPath + " no exists!");
+//            return;
+//        }
 
         mSurfaceView = new SurfaceView(mContext);
         mSurfaceView.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -149,7 +253,7 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
         mContainer.addView(mSurfaceView, lp);
     }
 
-    private SurfaceHolder.Callback mCallback = new SurfaceHolder.Callback(){
+    private static SurfaceHolder.Callback mCallback = new SurfaceHolder.Callback(){
 
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
@@ -169,7 +273,7 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
 
     };
 
-    void play(final int msec) {
+    static void  play(final int msec) {
 
         try {
             Log.d(TAG, "#play#, msec=" + msec);
@@ -183,13 +287,27 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setDisplay(mSurfaceView.getHolder());
-            mMediaPlayer.setOnCompletionListener(this);
-            mMediaPlayer.setOnErrorListener(this);
+            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    play(0);
+                }
+            });
+            mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    Log.d(TAG, "onError, what=" + what + ", extra=" + extra);
 
+                    changePlayState(PLAY_STATE_ERROR);
+
+                    reset();
+
+                    return false;
+                }
+            });
 
             String urlPath="android.resource://" + mContext.getPackageName()+ "/" + R.raw.video5;
             mMediaPlayer.setDataSource(mContext, Uri.parse(urlPath));
-
             mMediaPlayer.prepareAsync();
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
@@ -227,7 +345,7 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
     /**
      * 这个方法要在mediaPlayer的prepare方法之后才能调用，否则得到的getVideoWidth和getVideoHeight都是0
      */
-    void adjustVideoRatio(){
+    static void adjustVideoRatio(){
         int videoWith = mMediaPlayer.getVideoWidth();
         int videoHeight = mMediaPlayer.getVideoHeight();
 
@@ -266,7 +384,7 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
     }
 
 
-    void pause(){
+    static void pause(){
         Log.d(TAG, "#pause#");
 
         if (mMediaPlayer != null && mMediaPlayer.isPlaying() && mPlayState == PLAY_STATE_PLAYING) {
@@ -284,7 +402,7 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
         }
     }
 
-    void reset(){
+   static void reset(){
         if (mMediaPlayer != null) {
             mMediaPlayer.reset();
         }
@@ -292,14 +410,14 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
         changePlayState(PLAY_STATE_IDLE);
     }
 
-    void stop(){
+    static void stop(){
         Log.d(TAG, "#stop#");
 
         if (mMediaPlayer != null && (mPlayState == PLAY_STATE_PLAYING || mPlayState == PLAY_STATE_PAUSE)) {
             releaseMediaPlayer();
         }
     }
-    void releaseMediaPlayer(){
+   static void releaseMediaPlayer(){
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
@@ -309,7 +427,7 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
     }
 
 
-    String getPlayStateStr(int state){
+   static String getPlayStateStr(int state){
         switch (state) {
             case PLAY_STATE_IDLE:
                 return " idle ";
@@ -324,7 +442,7 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
         }
     }
 
-    void changePlayState(int playState){
+    static void changePlayState(int playState){
         if ((playState != PLAY_STATE_IDLE)
                 && (playState != PLAY_STATE_PLAYING)
                 && (playState != PLAY_STATE_PAUSE)
@@ -344,25 +462,6 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
     }
 
 
-    @Override
-    public void onCompletion(MediaPlayer mp) {
-        Log.d(TAG, "onCompletion");
-//        changePlayState(PLAY_STATE_IDLE);
-
-        play(0);
-    }
-
-
-    @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
-        Log.d(TAG, "onError, what=" + what + ", extra=" + extra);
-
-        changePlayState(PLAY_STATE_ERROR);
-
-        reset();
-
-        return false;
-    }
 
     /**
      * Called by the system to notify a Service that it is no longer used and is being removed.  The
@@ -375,6 +474,5 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
         super.onDestroy();
 
         Log.d(TAG, "onDestroy");
-        mWindowManager.removeView(mContainer);
     }
 }
