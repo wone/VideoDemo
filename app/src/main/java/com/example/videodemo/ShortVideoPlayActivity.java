@@ -48,7 +48,6 @@ public class ShortVideoPlayActivity extends Activity implements OnClickListener,
 	View mTitleBar;
 	View mOperatorBar;
 
-	TextView mBackBtn;
 	ImageView mMenuBtn;
 
 	TextView mProgressTime;
@@ -237,10 +236,6 @@ public class ShortVideoPlayActivity extends Activity implements OnClickListener,
 		
 		if (savedInstanceState != null) {
 			mCurrentPosition = savedInstanceState.getInt(STATE_PLAY_POSITION);
-
-//			if (Log.isColorLevel()) {
-//				Log.d(TAG, Log.CLR, "onCreate(), mCurrentPosition : " + mCurrentPosition);
-//			}
 		}
 		
 		initData(super.getIntent());
@@ -253,26 +248,19 @@ public class ShortVideoPlayActivity extends Activity implements OnClickListener,
 				mSurfaceViewWidth = mRoot.getWidth();
 				mSurfaceViewHeight = mRoot.getHeight();
 
-//				if (Log.isColorLevel()) {
 					Log.d(TAG, "onGlobalLayout,mSurfaceViewWidth:" + mSurfaceViewWidth + ",mSurfaceViewHeight:" + mSurfaceViewHeight);
-//				}
 
 				mRoot.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 			}
 
 		});
 
-		//适配沉浸式状态栏
-//		immersiveView = (ImmersiveTitleBar2) findViewById(R.id.title_top_bar);
-//		immersiveView.resetBkColor(0xcc222222);
 
 		mSurfaceView = (SurfaceView) findViewById(R.id.surfaceView);
 		mTitleBar = findViewById(R.id.titleBar);
 		mOperatorBar = findViewById(R.id.operatorBar);
         mCoverIV = (ImageView) findViewById(R.id.coverIV);
 
-//		mBackBtn = (TextView) findViewById(R.id.ivTitleBtnRight);
-//		mBackBtn.setOnClickListener(this);
 		mMenuBtn = (ImageView) findViewById(R.id.menuBtn);
 		mMenuBtn.setOnClickListener(this);
 
@@ -311,40 +299,23 @@ public class ShortVideoPlayActivity extends Activity implements OnClickListener,
 
 
 	void initData(Intent intent) {
-//		mVideoPath = intent.getExtras().getString(ShortVideoConstants.FILE_SEND_PATH);
-//		mMd5 = intent.getExtras().getString(ShortVideoConstants.FILE_SHORTVIDEO_MD5);
-//		mThumbMd5 = intent.getExtras().getString(ShortVideoConstants.THUMBFILE_MD5);
-//		mUinType = intent.getExtras().getInt(AppConstants.Key.UIN_TYPE);
-//		if (Log.isColorLevel()) {
-//			Log.d(TAG, Log.CLR, "initData(), intent extras =>mVideoPath: " + mVideoPath +", istoop:"+mUinType);
-//		}
-
-	    
 		if (TextUtils.isEmpty(mVideoPath)) {
-//			if (Log.isColorLevel()) {
-				Log.e(TAG, "initData(), mVideoPath or mMD5 is empty, finish");
-//			}
+			Log.e(TAG, "initData(), mVideoPath or mMD5 is empty, finish");
 			super.finish();
 		}
 
-//		if (!FileUtils.fileExistsAndNotEmpty(mVideoPath)) {
-//			Toast.makeText(this, Toast.ICON_ERROR, R.string.shortvideo_no_exits, Toast.LENGTH_SHORT).show(getTitleBarHeight());
-//			super.finish();
-//		}
 		
 		Log.d(TAG, "mVideoPath=" + mVideoPath);
 		
-		File file = new File(mVideoPath);
-		if (!file.exists()) {
-		    Log.e(TAG, "video file not exists!");
-		}
+//		File file = new File(mVideoPath);
+//		if (!file.exists()) {
+//		    Log.e(TAG, "video file not exists!");
+//		}
 		
 		}
 		
 	void startShowing() {
-//		if (Log.isColorLevel()) {
-			Log.d(TAG, "startShowing : mHidden = " + mHidden);
-//		}
+		Log.d(TAG, "startShowing : mHidden = " + mHidden);
 
 		if (!mHidden) {
 			return;
@@ -427,35 +398,6 @@ public class ShortVideoPlayActivity extends Activity implements OnClickListener,
                 mOperatorBar.setVisibility(View.VISIBLE);
                 mTitleBar.setVisibility(View.VISIBLE);
             }
-
-
-//            String thumbPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Movies" + File.separator + "2.jpg";
-//
-//            File thumbFile = new File(thumbPath);
-//            String parentPath = thumbFile.getParent();
-//            File parentFile = new File(parentPath);
-//
-//            if(!parentFile.exists() || !parentFile.isDirectory()) {
-//                parentFile.mkdirs();
-//            }
-//
-//            if(!thumbFile.exists() || !thumbFile.isFile()) {
-//                try {
-//                    thumbFile.createNewFile();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            FileOutputStream fOut = null;
-//            try {
-//                fOut = new FileOutputStream(thumbFile);
-//                mThumbBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
-//                fOut.flush();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-
         }
     }
 
@@ -467,8 +409,6 @@ public class ShortVideoPlayActivity extends Activity implements OnClickListener,
 
 		super.onStart();
 		Log.d(TAG, "onStart");
-
-
 	}
 
 	@Override

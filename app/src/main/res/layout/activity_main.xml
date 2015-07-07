@@ -1,7 +1,8 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="#FFFFFF"
     tools:context=".MainActivity" >
     
@@ -23,6 +24,7 @@
          android:paddingRight="10dp"
          android:thumb="@drawable/seekbar_thumb"
          android:thumbOffset="10dp"
+         android:visibility="gone"
          />
 
      
@@ -32,7 +34,6 @@
          android:layout_height="wrap_content"
          android:text="预览界面"
          android:textColor="#FFFFFF"
-         android:layout_below="@+id/seekBar"
          />
      
      <Button 
@@ -42,7 +43,6 @@
          android:text="播放界面"
          android:textColor="#FFFFFF"
          android:layout_marginTop="20dp"
-         android:layout_below="@+id/previewBtn"
          />
      
      <Button 
@@ -52,7 +52,6 @@
          android:text="工具接口"
          android:textColor="#FFFFFF"
          android:layout_marginTop="20dp"
-         android:layout_below="@+id/playBtn"
          />
 
     <Button
@@ -62,7 +61,6 @@
         android:text="悬浮视频1"
         android:textColor="#FFFFFF"
         android:layout_marginTop="20dp"
-        android:layout_below="@+id/testBtn"
         />
 
     <Button
@@ -72,6 +70,14 @@
         android:text="悬浮视频2"
         android:textColor="#FFFFFF"
         android:layout_marginTop="20dp"
-        android:layout_below="@+id/floatVideoBtn"
         />
-</RelativeLayout>
+
+    <Button
+        android:id="@+id/videoOnlineBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="在线视频"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="20dp"/>
+
+</LinearLayout>
