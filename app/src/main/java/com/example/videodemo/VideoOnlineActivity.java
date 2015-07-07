@@ -1,6 +1,7 @@
 package com.example.videodemo;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +16,6 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -88,6 +88,8 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
     private boolean mNeedRestore = false;
     private Bitmap mThumbBitmap;
     private ImageView mCoverIV;
+
+    private ProgressDialog mDialog;
 
     final Handler mHandler = new Handler();
 
@@ -203,8 +205,6 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
             mCurrentPosition = savedInstanceState.getInt(STATE_PLAY_POSITION);
         }
 
-        initData(super.getIntent());
-
         mRoot = (RelativeLayout) findViewById(R.id.root);
         mRoot.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
 
@@ -262,23 +262,6 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
     }
 
 
-
-    void initData(Intent intent) {
-        if (TextUtils.isEmpty(mVideoPath)) {
-            Log.e(TAG, "initData(), mVideoPath or mMD5 is empty, finish");
-            super.finish();
-        }
-
-
-        Log.d(TAG, "mVideoPath=" + mVideoPath);
-
-//		File file = new File(mVideoPath);
-//		if (!file.exists()) {
-//		    Log.e(TAG, "video file not exists!");
-//		}
-
-    }
-
     void startShowing() {
         Log.d(TAG, "startShowing : mHidden = " + mHidden);
 
@@ -312,7 +295,7 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
     }
 
     void startHiding() {
-        Log.d(TAG,  "startHiding : mHidden = " + mHidden + ",playState:" + getPlayStateStr(mPlayState));
+        Log.d(TAG, "startHiding : mHidden = " + mHidden + ",playState:" + getPlayStateStr(mPlayState));
 
         if (mHidden) {
             return;
@@ -412,7 +395,7 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
     protected void onDestroy() {
         super.onDestroy();
 
-        Log.d(TAG,  "onDestroy");
+        Log.d(TAG, "onDestroy");
 
         // 避免内存泄露
         mHandler.removeCallbacksAndMessages(null);
@@ -438,6 +421,13 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
         } else {
             play(0);
         }
+
+        mDialog = new ProgressDialog(this);
+        // Set progressbar message
+        mDialog.setMessage("正在缓冲...");
+        mDialog.setIndeterminate(false);
+        mDialog.setCancelable(false);
+        mDialog.show();
     }
 
     @Override
@@ -621,6 +611,10 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
                 public void onPrepared(MediaPlayer mp) {
 
                     Log.d(TAG, "MediaPlayer onPrepared: mDuration=" + mDuration);
+
+                    if (mDialog.isShowing()) {
+                        mDialog.dismiss();
+                    }
 
                     if (mDuration <= 0) {
                         initDuration();
