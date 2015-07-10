@@ -22,10 +22,10 @@ public class MainActivity extends Activity implements OnClickListener{
 		
 		this.findViewById(R.id.previewBtn).setOnClickListener(this);
 		this.findViewById(R.id.playBtn).setOnClickListener(this);
-		this.findViewById(R.id.testBtn).setOnClickListener(this);
 		this.findViewById(R.id.floatVideoBtn).setOnClickListener(this);
         this.findViewById(R.id.floatVideo2Btn).setOnClickListener(this);
 		this.findViewById(R.id.videoOnlineBtn).setOnClickListener(this);
+		this.findViewById(R.id.musicOnlineBtn).setOnClickListener(this);
 	}
 
 	@Override
@@ -40,10 +40,7 @@ public class MainActivity extends Activity implements OnClickListener{
 //			overridePendingTransition(R.anim.zoom_enter, 0); 
 //			overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out); 
 			break;
-		case R.id.testBtn:
-			startActivity(new Intent(this, TestActivity.class));
-			overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out); 
-			break;
+
 		case R.id.floatVideoBtn:
 			startActivity(new Intent(this, FloatVideoActivity.class));
 			break;
@@ -52,6 +49,9 @@ public class MainActivity extends Activity implements OnClickListener{
             break;
 		case R.id.videoOnlineBtn:
 			startActivity(new Intent(this, VideoOnlineActivity.class));
+			break;
+		case R.id.musicOnlineBtn:
+			startActivity(new Intent(this, MusicOnlineActivity.class));
 			break;
 		}
 	}

@@ -77,7 +77,7 @@ public class ShortVideoPlayActivity extends Activity implements OnClickListener,
 	final static int OPERATOR_BAR_HIDE_DELAY = 2500;
 
 	// 进度条刷新时间间隔
-	final static int PROGRESS_REFRESH_INTERNAL = 500;
+	final static int PROGRESS_REFRESH_INTERNAL = 16;
 
 	final static int MSG_TYPE_SAVE_FAILURE = 1;
 	final static int MSG_TYPE_SAVE_SUCCESS = 2;

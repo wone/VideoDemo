@@ -33,10 +33,14 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.videodemo.proxy.HttpGetProxy;
+
+import java.io.IOException;
+
 public class VideoOnlineActivity extends Activity implements OnClickListener, OnCompletionListener, OnErrorListener, SurfaceHolder.Callback {
     static final String TAG = "VideoDemo.VideoOnlineActivity";
 
-    public static String VIDEO_URL = "http://www.androidbegin.com/tutorial/AndroidCommercial.3gp";
+    public static String VIDEO_URL = "http://127.0.0.1:9090/tutorial/AndroidCommercial.3gp";
 
     RelativeLayout mRoot;
     SurfaceView mSurfaceView;
@@ -414,20 +418,43 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
             return;
         }
 
-        // 创建SurfaceHolder的时候，如果存在上次播放的位置，则按照上次播放位置进行播放
-        if (mCurrentPosition > 0) {
-            play(mCurrentPosition);
-            mCurrentPosition = 0;
-        } else {
-            play(0);
-        }
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                HttpGetProxy proxy = new HttpGetProxy(9090);
+                try {
+                    proxy.startProxy("www.androidbegin.com");
+                } catch (IOException e) {
+                    Log.e(TAG, "startProxy", e);
+                }
+
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 创建SurfaceHolder的时候，如果存在上次播放的位置，则按照上次播放位置进行播放
+                        if (mCurrentPosition > 0) {
+                            play(mCurrentPosition);
+                            mCurrentPosition = 0;
+                        } else {
+                            play(0);
+                        }
+                    }
+                }, 2000);
+            }
+
+        }).start();
+
+
 
         mDialog = new ProgressDialog(this);
         // Set progressbar message
         mDialog.setMessage("正在缓冲...");
         mDialog.setIndeterminate(false);
-        mDialog.setCancelable(false);
+//        mDialog.setCancelable(false);
         mDialog.show();
+
     }
 
     @Override

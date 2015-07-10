@@ -44,15 +44,6 @@
          android:textColor="#FFFFFF"
          android:layout_marginTop="20dp"
          />
-     
-     <Button 
-         android:id="@+id/testBtn"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:text="工具接口"
-         android:textColor="#FFFFFF"
-         android:layout_marginTop="20dp"
-         />
 
     <Button
         android:id="@+id/floatVideoBtn"
@@ -77,6 +68,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="在线视频"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="20dp"/>
+
+    <Button
+        android:id="@+id/musicOnlineBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="在线音频"
         android:textColor="#FFFFFF"
         android:layout_marginTop="20dp"/>
 
