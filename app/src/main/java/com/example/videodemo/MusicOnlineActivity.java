@@ -27,8 +27,7 @@ public class MusicOnlineActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //在百度MP3里随便搜索到的,大家可以试试别的链接
-                String url="http://219.138.125.22/myweb/mp3/CMP3/JH19.MP3";
-                player.playUrl(url);
+                player.playUrl();
             }
         });
 

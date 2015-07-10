@@ -40,7 +40,7 @@ import java.io.IOException;
 public class VideoOnlineActivity extends Activity implements OnClickListener, OnCompletionListener, OnErrorListener, SurfaceHolder.Callback {
     static final String TAG = "VideoDemo.VideoOnlineActivity";
 
-    public static String VIDEO_URL = "http://127.0.0.1:9090/tutorial/AndroidCommercial.3gp";
+    public static String VIDEO_URL = "http://www.androidbegin.com/tutorial/AndroidCommercial.3gp";
 
     RelativeLayout mRoot;
     SurfaceView mSurfaceView;
@@ -94,6 +94,8 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
     private ImageView mCoverIV;
 
     private ProgressDialog mDialog;
+
+    private String mLocalUrl;
 
     final Handler mHandler = new Handler();
 
@@ -425,10 +427,12 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
 
                 HttpGetProxy proxy = new HttpGetProxy(9090);
                 try {
-                    proxy.startProxy("www.androidbegin.com");
+                    proxy.startProxy();
                 } catch (IOException e) {
                     Log.e(TAG, "startProxy", e);
                 }
+
+                mLocalUrl = proxy.getLocalURL(mVideoPath);
 
                 mHandler.postDelayed(new Runnable() {
                     @Override
@@ -441,11 +445,11 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
                             play(0);
                         }
                     }
-                }, 2000);
+                }, 0);
+
             }
 
         }).start();
-
 
 
         mDialog = new ProgressDialog(this);
@@ -627,7 +631,7 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setDisplay(mSurfaceView.getHolder());
-            mMediaPlayer.setDataSource(mVideoPath);
+            mMediaPlayer.setDataSource(mLocalUrl);
             mMediaPlayer.setOnCompletionListener(this);
             mMediaPlayer.setOnErrorListener(this);
             mMediaPlayer.setOnBufferingUpdateListener(mOnBufferListener);

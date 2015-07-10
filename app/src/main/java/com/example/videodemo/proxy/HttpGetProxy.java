@@ -10,54 +10,54 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 
 public class HttpGetProxy {
-    private final String TAG = "VideoDemo.HttpGetProxy";
+    final static private String TAG = "VideoDemo.HttpGetProxy";
+    final static private String LOCAL_IP_ADDRESS = "127.0.0.1";
+    final static private int HTTP_PORT = 80;
 
-    final private String LOCAL_IP_ADDRESS = "127.0.0.1";
-    final private int HTTP_PORT = 80;
-
+    private int local_ip_port;
     private ServerSocket localServer = null;
     private Socket localSocket = null;
     private Socket remoteSocket = null;
-    private String remoteIPAddress;
+    private String remoteHost;
 
     private InputStream in_remoteSocket;
     private OutputStream out_remoteSocket;
     private InputStream in_localSocket;
     private OutputStream out_localSocket;
 
+    private SocketAddress address;
     private interface OnFinishListener {
         void onFinishListener();
     }
 
+    /**
+     * 初始化代理服务器
+     * @param localport 代理服务器监听的端口
+     */
     public HttpGetProxy(int localport) {
-
-        // --------建立代理中转服务器-----------//  
+        local_ip_port=localport;
         try {
             localServer = new ServerSocket(localport, 1,
                     InetAddress.getByName(LOCAL_IP_ADDRESS));
         } catch (UnknownHostException e) {
             e.printStackTrace();
-
-            Log.d(TAG, "HttpGetProxy()", e);
         } catch (IOException e) {
-            Log.d(TAG, "HttpGetProxy()", e);
-        } catch (Exception e){
-            Log.d(TAG, "HttpGetProxy()", e);
+            e.printStackTrace();
         }
     }
 
     /**
-     * 结束时，清除所有资源 
+     * 结束时，清除所有资源
      */
-    private OnFinishListener finishListener =new OnFinishListener(){
+    private OnFinishListener finishListener = new OnFinishListener() {
 
         @Override
         public void onFinishListener() {
             Log.e(TAG, "..........release all..........");
-
             try {
                 in_localSocket.close();
                 out_remoteSocket.close();
@@ -74,101 +74,95 @@ public class HttpGetProxy {
     };
 
 
+    /**
+     * 把网络URL转为本地URL，127.0.0.1替换网络域名
+     * @param url 网络URL
+     * @return 本地URL
+     */
+    public String getLocalURL(String url){
+        String result = null;
+        URI originalURI=URI.create(url);
+        remoteHost=originalURI.getHost();
+        if(originalURI.getPort()!=-1){//URL带Port
+            address = new InetSocketAddress(remoteHost,
+                    originalURI.getPort());//使用默认端口
+            result=url.replace(remoteHost+":"+originalURI.getPort(),
+                    LOCAL_IP_ADDRESS+":"+local_ip_port);
+        }
+        else{//URL不带Port
+            address = new InetSocketAddress(remoteHost,
+                    HTTP_PORT);//使用80端口
+            result=url.replace(remoteHost,LOCAL_IP_ADDRESS+":"+local_ip_port);
+        }
+        return result;
 
-    public void startProxy(String remoteIpAddr) throws IOException {
-        remoteIPAddress = remoteIpAddr;
-        SocketAddress address = new InetSocketAddress(remoteIPAddress, HTTP_PORT);
+    }
 
-        // --------连接目标服务器---------//
-        remoteSocket = new Socket();
-        remoteSocket.connect(address);
+    /**
+     * 启动代理服务器
+     * @throws IOException
+     */
+    public void startProxy() throws IOException {
 
-        in_remoteSocket = remoteSocket.getInputStream();
-        out_remoteSocket = remoteSocket.getOutputStream();
-
-        Log.e(TAG, "startProxy..........remote Server connected..........");
-
-        /**
-         * 接收本地request，并转发到远程服务器
-         */
         new Thread() {
             public void run() {
                 int bytes_read;
-                byte[] local_request = new byte[5120];
-                try {
-                    // 本地Socket
-                    localSocket = localServer.accept();
+                byte[] local_request = new byte[1024];
+                byte[] remote_reply = new byte[1024];
+                while (true) {
+                    try {
+                        //--------------------------------------
+                        //监听MediaPlayer的请求，MediaPlayer->代理服务器
+                        //--------------------------------------
+                        localSocket = localServer.accept();
 
-                    Log.d(TAG, "..........localSocket connected..........");
+                        Log.e(TAG, "..........localSocket connected..........");
+                        in_localSocket = localSocket.getInputStream();
+                        out_localSocket = localSocket.getOutputStream();
+                        Log.e(TAG, "..........init local Socket I/O..........");
 
-                    in_localSocket = localSocket.getInputStream();
-                    out_localSocket = localSocket.getOutputStream();
-
-                    Log.d(TAG, "..........init local Socket I/O..........");
-
-                    String buffer = "";
-                    while ((bytes_read = in_localSocket.read(local_request)) != -1) {
-                        String str = new String(local_request);
-
-                        Log.e(TAG, "localSocket---->"+str);
-
-                        buffer = buffer + str;
-
-                        if (buffer.contains("GET")
-                                && buffer.contains("\r\n\r\n")) {
-
-                            //---把request中的本地ip改为远程ip---//
-                            buffer = buffer.replace(LOCAL_IP_ADDRESS, remoteIPAddress);
-
-                            Log.d(TAG , "已经替换IP, remoteIPAddress="+remoteIPAddress);
-
-                            out_remoteSocket.write(buffer.getBytes());
-                            out_remoteSocket.flush();
-                            continue;
-
-                        } else{
-                            out_remoteSocket.write(buffer.getBytes());
-                            out_remoteSocket.flush();
+                        String buffer = "";//保存MediaPlayer的HTTP请求
+                        while ((bytes_read = in_localSocket.read(local_request)) != -1) {
+                            String str = new String(local_request);
+                            Log.e("localSocket---->", str);
+                            buffer = buffer + str;
+                            if (buffer.contains("GET")
+                                    && buffer.contains("\r\n\r\n")) {
+                                // ---把request中的本地ip改为远程ip---//
+                                buffer = buffer.replace(LOCAL_IP_ADDRESS,remoteHost);
+                                break;
+                            }
                         }
+                        Log.e(TAG, "..........local finish receive..........");
+
+                        //--------------------------------------
+                        //把MediaPlayer的请求发到网络服务器，代理服务器->网络服务器
+                        //--------------------------------------
+                        remoteSocket = new Socket();
+                        remoteSocket.connect(address);
+
+                        Log.e(TAG,"..........remote Server connected..........");
+
+                        in_remoteSocket = remoteSocket.getInputStream();
+                        out_remoteSocket = remoteSocket.getOutputStream();
+                        out_remoteSocket.write(buffer.getBytes());//发送MediaPlayer的请求
+                        out_remoteSocket.flush();
+
+                        //------------------------------------------------------
+                        //把网络服务器的反馈发到MediaPlayer，网络服务器->代理服务器->MediaPlayer
+                        //------------------------------------------------------
+                        Log.e(TAG,"..........remote start to receive..........");
+                        while ((bytes_read = in_remoteSocket.read(remote_reply)) != -1) {
+                            out_localSocket.write(remote_reply, 0, bytes_read);
+                            out_localSocket.flush();
+                        }
+                        Log.e(TAG, "..........over..........");
+                        finishListener.onFinishListener();//释放资源
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-
-                    Log.e(TAG, "..........local finish receive..........");
-                    finishListener.onFinishListener();
-                } catch (IOException e) {
-                    Log.e(TAG, "", e);
-                }
-            }
-        }.start();
-
-        /**
-         * 接收远程服务器reply，并转发到本地客户端
-         */
-        new Thread() {
-            public void run() {
-                int bytes_read;
-                byte[] remote_reply = new byte[5120];
-                try {
-                    Log.e(TAG,"..........remote ready to receive..........");
-
-                    while ((bytes_read = in_remoteSocket.read(remote_reply)) != -1) {
-
-                        //System.out.println("remoteSocket     " + remote_reply.length);
-                        //System.out.println("remoteSocket     " + new String(remote_reply));
-
-                        Log.d(TAG,"..........remote receiving..........");
-
-                        out_localSocket.write(remote_reply, 0, bytes_read);
-                        out_localSocket.flush();
-                    }
-
-                    Log.e(TAG, "..........remote finish receive..........");
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-
-                    Log.d(TAG, "", e);
                 }
             }
         }.start();
     }
-}  
+}

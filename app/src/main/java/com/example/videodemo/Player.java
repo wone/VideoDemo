@@ -22,6 +22,10 @@ public class Player implements OnBufferingUpdateListener,
     private SeekBar skbProgress;
     private Timer mTimer=new Timer();
 
+    private HttpGetProxy proxy;
+
+    private String mLocalUrl;
+
     public Player(SeekBar skbProgress)
     {
         this.skbProgress=skbProgress;
@@ -41,13 +45,16 @@ public class Player implements OnBufferingUpdateListener,
 
             @Override
             public void run() {
-                HttpGetProxy proxy = new HttpGetProxy(9090);
-
+                proxy = new HttpGetProxy(9090);
                 try {
-                    proxy.startProxy("conteadiwagner.com");
+                    proxy.startProxy();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                String remoteUrl = "http://conteadiwagner.com/audio/sf.mp3";
+                mLocalUrl = proxy.getLocalURL(remoteUrl);
+
             }
 
         }).start();
@@ -86,13 +93,15 @@ public class Player implements OnBufferingUpdateListener,
         mediaPlayer.start();
     }
 
-    public void playUrl(String videoUrl)
+    public void playUrl()
     {
-        //http://conteadiwagner.com/audio/sf.mp3
+        //
         try {
             mediaPlayer.reset();
             //mediaPlayer.setDataSource("http://qzone-music.qq.com/fcg-bin/fcg_set_musiccookie.fcg?fromtag=9");
-            mediaPlayer.setDataSource("http://127.0.0.1:9090/audio/sf.mp3");
+
+            mediaPlayer.setDataSource(mLocalUrl);
+
             mediaPlayer.prepare();
             //mediaPlayer.start();
         } catch (IllegalArgumentException e) {
