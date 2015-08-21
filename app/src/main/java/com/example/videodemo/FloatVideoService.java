@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -20,11 +22,16 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 
 public class FloatVideoService extends Service implements MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 
     private static final String TAG = "VideoDemo.FloatService";
+
+    //http://www.androidbegin.com/tutorial/AndroidCommercial.3gp
+    //http://ws.a.yximgs.com/upic/2015/07/15/17/BMjAxNTA3MTUxNzQwMjdfMTcwNjM3NjZfMjk5MDE5MjY2XzFfMw==.mp4
+//    public static String VIDEO_URL = "http://www.androidbegin.com/tutorial/AndroidCommercial.3gp";
 
     public final static int PLAY_STATE_IDLE = 0;
     public final static int PLAY_STATE_PLAYING = 1;
@@ -43,6 +50,7 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
     private int mSurfaceViewWidth;
     private int mSurfaceViewHeight;
 
+    private TextView mLoadingText;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -61,22 +69,37 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
     }
 
     private void initFloatUI(){
+
         mContainer = new RelativeLayout(this);
         mContainer.setBackgroundColor(Color.BLUE);
-        mContainer.setOnClickListener(new View.OnClickListener() {
+
+        initVideo();
+
+        TextView closeText = new TextView(this);
+        closeText.setText("关闭");
+        closeText.setTextColor(Color.BLUE);
+        closeText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FloatVideoService.this.stopSelf();
             }
         });
-//        mContainer.setBackgroundResource(R.drawable.ic_launcher);
 
-//        TextView tv = new TextView(this);
-//        tv.setText("test 123");
-//        mContainer.addView(tv);
-//        mContainer.requestDisallowInterceptTouchEvent(true);
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        lp.addRule(RelativeLayout.CENTER_VERTICAL);
+        mContainer.addView(closeText, lp);
 
-        initVideo();
+        mLoadingText = new TextView(this);
+        mLoadingText.setText("正在加载...");
+        mLoadingText.setTextColor(Color.WHITE);
+        mLoadingText.setTextSize(18);
+        mLoadingText.setVisibility(View.INVISIBLE);
+        RelativeLayout.LayoutParams lp1 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp1.addRule(RelativeLayout.CENTER_IN_PARENT);
+        mContainer.addView(mLoadingText, lp1);
+
+        showLoadingView();
 
         mWindowManager = (WindowManager)getSystemService(WINDOW_SERVICE);
 
@@ -145,7 +168,8 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
             }
         });
 
-        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
         mContainer.addView(mSurfaceView, lp);
     }
 
@@ -169,9 +193,18 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
 
     };
 
+    private MediaPlayer.OnBufferingUpdateListener mOnBufferListener = new MediaPlayer.OnBufferingUpdateListener() {
+        @Override
+        public void onBufferingUpdate(MediaPlayer mp, int percent) {
+            Log.i(TAG, "MediaPlayer onBufferingUpdate, percent=" + percent);
+        }
+    };
+
     void play(final int msec) {
 
         try {
+            showLoadingView();
+
             Log.d(TAG, "#play#, msec=" + msec);
 
             if (mMediaPlayer != null) {
@@ -185,17 +218,18 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
             mMediaPlayer.setDisplay(mSurfaceView.getHolder());
             mMediaPlayer.setOnCompletionListener(this);
             mMediaPlayer.setOnErrorListener(this);
-
+            mMediaPlayer.setOnBufferingUpdateListener(mOnBufferListener);
 
             String urlPath="android.resource://" + mContext.getPackageName()+ "/" + R.raw.video5;
             mMediaPlayer.setDataSource(mContext, Uri.parse(urlPath));
-
             mMediaPlayer.prepareAsync();
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     Log.d(TAG, "mMediaPlayer onPrepared: ");
+
+                    dismissLoadingView();
 
                     adjustVideoRatio();
 
@@ -209,12 +243,10 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
                     changePlayState(PLAY_STATE_PLAYING);
 
                 }
-
             });
 
         } catch (Exception e) {
             Log.e(TAG, "#play#, msec=" + msec, e);
-
             reset();
         }
     }
@@ -238,6 +270,12 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
             return;
         }
 
+//        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+//        Log.d(TAG, "initFloatUI(): width = "+displayMetrics.widthPixels + ", height = " + displayMetrics.heightPixels);
+//
+//        mSurfaceViewHeight = displayMetrics.heightPixels/3;
+//        mSurfaceViewWidth = displayMetrics.widthPixels;
+
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(videoWith*2, videoHeight*2);
         mSurfaceView.setLayoutParams(lp);
 
@@ -249,8 +287,8 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
 //            int h = (int)((float)mSurfaceViewWidth * (float)videoHeight / (float)videoWith);
 //            int margin = (int)(((float)mSurfaceViewHeight - (float)h) / 2f);
 //            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
-//                    RelativeLayout.LayoutParams.FILL_PARENT,
-//                    RelativeLayout.LayoutParams.FILL_PARENT);
+//                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                    RelativeLayout.LayoutParams.WRAP_CONTENT);
 //            lp.setMargins(0, margin, 0, margin);
 //            mSurfaceView.setLayoutParams(lp);
 //        } else {
@@ -258,8 +296,8 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
 //            int w = (int)((float)mSurfaceViewHeight * (float)videoWith / (float)videoHeight);
 //            int margin =  (int)(((float)mSurfaceViewWidth - (float)w) / 2f);
 //            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
-//                    RelativeLayout.LayoutParams.FILL_PARENT,
-//                    RelativeLayout.LayoutParams.FILL_PARENT);
+//                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                    RelativeLayout.LayoutParams.WRAP_CONTENT);
 //            lp.setMargins(margin, 0, margin, 0);
 //            mSurfaceView.setLayoutParams(lp);
 //        }
@@ -361,6 +399,8 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
 
         reset();
 
+        dismissLoadingView();
+
         return false;
     }
 
@@ -376,5 +416,23 @@ public class FloatVideoService extends Service implements MediaPlayer.OnCompleti
 
         Log.d(TAG, "onDestroy");
         mWindowManager.removeView(mContainer);
+    }
+
+    void showLoadingView() {
+        if (mLoadingText.getVisibility() != View.VISIBLE) {
+            Drawable loadingDrawable = this.getResources().getDrawable(R.drawable.common_loading6);
+            mLoadingText.setCompoundDrawablePadding(10);
+            mLoadingText.setCompoundDrawablesWithIntrinsicBounds(loadingDrawable, null, null, null);
+
+            mLoadingText.setVisibility(View.VISIBLE);
+
+            ((Animatable) loadingDrawable).start();
+        }
+    }
+
+    void dismissLoadingView() {
+        if (mLoadingText.getVisibility() == View.VISIBLE) {
+            mLoadingText.setVisibility(View.GONE);
+        }
     }
 }

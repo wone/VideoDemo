@@ -41,23 +41,23 @@ public class Player implements OnBufferingUpdateListener,
 
         mTimer.schedule(mTimerTask, 0, 1000);
 
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                proxy = new HttpGetProxy(9090);
-                try {
-                    proxy.startProxy();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                String remoteUrl = "http://conteadiwagner.com/audio/sf.mp3";
-                mLocalUrl = proxy.getLocalURL(remoteUrl);
-
-            }
-
-        }).start();
+//        new Thread(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                proxy = new HttpGetProxy(9090);
+//                try {
+//                    proxy.startProxy();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                String remoteUrl = "http://conteadiwagner.com/audio/sf.mp3";
+//                mLocalUrl = proxy.getLocalURL(remoteUrl);
+//
+//            }
+//
+//        }).start();
     }
 
     /*******************************************************

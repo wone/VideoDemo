@@ -8,5 +8,5 @@
     <string name="title_activity_stream_video">StreamVideoActivity</string>
     <string name="title_activity_video_online">VideoOnlineActivity</string>
     <string name="title_activity_music_test_play">MusicTestPlayActivity</string>
-
+    <string name="title_activity_cache_video">VideoCacheActivity</string>
 </resources>

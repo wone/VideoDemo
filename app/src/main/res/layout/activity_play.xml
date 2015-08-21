@@ -27,6 +27,14 @@
         android:layout_alignTop="@+id/surfaceView"
         android:layout_alignBottom="@+id/surfaceView"
     -->
+    <TextView
+        android:id="@+id/infoText"
+        android:textColor="#cccccc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_margin="100dp"
+        />
 
     <ImageView
         android:id="@+id/coverIV"
@@ -34,7 +42,16 @@
         android:layout_height="match_parent"
         android:visibility="gone"
         />
-    
+
+    <TextView
+        android:id="@+id/loadingText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="正在加载..."
+        android:visibility="gone"
+        />
+
     <RelativeLayout
         android:id="@+id/titleBar"
         android:layout_width="match_parent"
