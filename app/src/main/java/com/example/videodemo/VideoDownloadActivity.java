@@ -49,8 +49,8 @@ import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class VideoActivity extends Activity implements OnClickListener, OnCompletionListener, OnErrorListener, SurfaceHolder.Callback {
-    static final String TAG = "VideoDemo.VideoActivity";
+public class VideoDownloadActivity extends Activity implements OnClickListener, OnCompletionListener, OnErrorListener, SurfaceHolder.Callback {
+    static final String TAG = "VideoDemo.VideoDownloadActivity";
 
     public static String URL1= "http://ws.a.yximgs.com/upic/2015/07/15/17/BMjAxNTA3MTUxNzQwMjdfMTcwNjM3NjZfMjk5MDE5MjY2XzFfMw==.mp4";
     public static String URL2 = "http://www.androidbegin.com/tutorial/AndroidCommercial.3gp";
@@ -353,16 +353,16 @@ public class VideoActivity extends Activity implements OnClickListener, OnComple
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         registerReceiver(mReceiver, filter);
 
-        try {
-            if (ViewConfiguration.class.getDeclaredMethod(
-                    "hasPermanentMenuKey", null) != null
-                    && !ViewConfiguration. get(this).hasPermanentMenuKey()) {
-                getWindow().addFlags(
-                        WindowManager.LayoutParams. class.getField(
-                                "FLAG_NEEDS_MENU_KEY").getInt(null ));
-            }
-        } catch (Exception e) {
-        }
+//        try {
+//            if (ViewConfiguration.class.getDeclaredMethod(
+//                    "hasPermanentMenuKey", null) != null
+//                    && !ViewConfiguration. get(this).hasPermanentMenuKey()) {
+//                getWindow().addFlags(
+//                        WindowManager.LayoutParams. class.getField(
+//                                "FLAG_NEEDS_MENU_KEY").getInt(null ));
+//            }
+//        } catch (Exception e) {
+//        }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 

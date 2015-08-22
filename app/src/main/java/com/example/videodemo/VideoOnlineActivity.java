@@ -275,16 +275,16 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         registerReceiver(mReceiver, filter);
 
-        try {
-            if (ViewConfiguration.class.getDeclaredMethod(
-                    "hasPermanentMenuKey", null) != null
-                    && !ViewConfiguration. get(this).hasPermanentMenuKey()) {
-                getWindow().addFlags(
-                        WindowManager.LayoutParams. class.getField(
-                                "FLAG_NEEDS_MENU_KEY").getInt(null ));
-            }
-        } catch (Exception e) {
-        }
+//        try {
+//            if (ViewConfiguration.class.getDeclaredMethod(
+//                    "hasPermanentMenuKey", null) != null
+//                    && !ViewConfiguration. get(this).hasPermanentMenuKey()) {
+//                getWindow().addFlags(
+//                        WindowManager.LayoutParams. class.getField(
+//                                "FLAG_NEEDS_MENU_KEY").getInt(null ));
+//            }
+//        } catch (Exception e) {
+//        }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
