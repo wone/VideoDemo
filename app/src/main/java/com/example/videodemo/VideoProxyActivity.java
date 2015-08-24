@@ -17,16 +17,13 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.WindowManager;
@@ -40,26 +37,20 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.videodemo.proxy.C;
+import com.example.videodemo.proxy.HttpGetProxy;
+import com.example.videodemo.proxy.ProxyUtils;
+
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
-public class VideoActivity extends Activity implements OnClickListener, OnCompletionListener, OnErrorListener, SurfaceHolder.Callback {
-    static final String TAG = "VideoDemo.VideoActivity";
 
-    public static String URL1= "http://ws.a.yximgs.com/upic/2015/07/15/17/BMjAxNTA3MTUxNzQwMjdfMTcwNjM3NjZfMjk5MDE5MjY2XzFfMw==.mp4";
-    public static String URL2 = "http://www.androidbegin.com/tutorial/AndroidCommercial.3gp";
-    public static String VIDEO_URL = URL1;
+public class VideoProxyActivity extends Activity implements OnClickListener, OnCompletionListener, OnErrorListener, SurfaceHolder.Callback {
+    static final String TAG = "VideoDemo.VideoProxyActivity";
 
-    private String mLocalUrl = Environment.getExternalStorageDirectory()
-            .getAbsolutePath()
-            + "/VideoDemoCache/"
-            + System.currentTimeMillis() + ".mp4";
+    //http://ws.a.yximgs.com/upic/2015/07/15/17/BMjAxNTA3MTUxNzQwMjdfMTcwNjM3NjZfMjk5MDE5MjY2XzFfMw==.mp4
+    //http://www.androidbegin.com/tutorial/AndroidCommercial.3gp
+    //https://github.com/wone/VideoDemo/blob/master/files/test1.mp4
+    public static String VIDEO_URL = "http://ws.a.yximgs.com/upic/2015/07/15/17/BMjAxNTA3MTUxNzQwMjdfMTcwNjM3NjZfMjk5MDE5MjY2XzFfMw==.mp4";
 
     RelativeLayout mRoot;
     SurfaceView mSurfaceView;
@@ -114,77 +105,12 @@ public class VideoActivity extends Activity implements OnClickListener, OnComple
 
     private ProgressDialog mDialog;
 
-
-    private TextView mInfoText;
+    private HttpGetProxy mProxy;
+    private String mProxyUrl;
 
     private TextView mLoadingText;
 
-    /////////
-    private boolean isready = false;
-    private boolean iserror = false;
-
-    private int errorCnt = 0;
-    private int curPosition = 0;
-    private long mediaLength = 0;
-    private long readSize = 0;
-
-    private static final int READY_BUFF = 200 * 1024;//200 kb
-    private static final int CACHE_BUFF = 100 * 1024; //100 kb
-
-    private final static int VIDEO_STATE_UPDATE = 0;
-    private final static int CACHE_VIDEO_READY = 1;
-    private final static int CACHE_VIDEO_UPDATE = 2;
-    private final static int CACHE_VIDEO_END = 3;
-
-    final Handler mHandler = new Handler(){
-
-        @Override
-        public void handleMessage(Message msg){
-            switch (msg.what){
-                case VIDEO_STATE_UPDATE:
-//                    Log.d(TAG, "handleMessage VIDEO_STATE_UPDATE");
-
-                    double cachepercent = readSize * 100.00 / mediaLength * 1.0;
-                    String s = String.format("已缓存: [%.2f%%]", cachepercent);
-
-                    if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
-                        curPosition = mMediaPlayer.getCurrentPosition();
-                        int duration = mMediaPlayer.getDuration();
-                        duration = duration == 0 ? 1 : duration;
-
-                        double playpercent = curPosition * 100.00 / duration * 1.0;
-
-                        int i = curPosition / 1000;
-                        int hour = i / (60 * 60);
-                        int minute = i / 60 % 60;
-                        int second = i % 60;
-
-                        s += String.format(" 播放: %02d:%02d:%02d [%.2f%%]", hour,
-                                minute, second, playpercent);
-
-                        mInfoText.setText(s);
-                    }
-                    mHandler.sendEmptyMessageDelayed(VIDEO_STATE_UPDATE, 1000);
-                    break;
-
-                case CACHE_VIDEO_READY:
-                    Log.d(TAG, "handleMessage CACHE_VIDEO_READY");
-                    isready = true;
-
-                    play(0);
-
-                    break;
-
-                case CACHE_VIDEO_UPDATE:
-//                    Log.d(TAG, "handleMessage CACHE_VIDEO_UPDATE");
-                    break;
-
-                case CACHE_VIDEO_END:
-                    Log.d(TAG, "handleMessage CACHE_VIDEO_END");
-                    break;
-            }
-        }
-    };
+    final Handler mHandler = new Handler();
 
 
     final Runnable mProgressChecker = new Runnable() {
@@ -266,7 +192,9 @@ public class VideoActivity extends Activity implements OnClickListener, OnComple
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
+//        	if (Log.isColorLevel()) {
             Log.d(TAG, "onReceive ===>" + action);
+//        	}
 
             if (Intent.ACTION_SCREEN_OFF.equals(action)) { // 锁屏或者音视频通话开始
 
@@ -314,7 +242,6 @@ public class VideoActivity extends Activity implements OnClickListener, OnComple
 
 
         mSurfaceView = (SurfaceView) findViewById(R.id.surfaceView);
-        mInfoText = (TextView) findViewById(R.id.infoText);
         mTitleBar = findViewById(R.id.titleBar);
         mOperatorBar = findViewById(R.id.operatorBar);
         mCoverIV = (ImageView) findViewById(R.id.coverIV);
@@ -353,19 +280,18 @@ public class VideoActivity extends Activity implements OnClickListener, OnComple
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         registerReceiver(mReceiver, filter);
 
-        try {
-            if (ViewConfiguration.class.getDeclaredMethod(
-                    "hasPermanentMenuKey", null) != null
-                    && !ViewConfiguration. get(this).hasPermanentMenuKey()) {
-                getWindow().addFlags(
-                        WindowManager.LayoutParams. class.getField(
-                                "FLAG_NEEDS_MENU_KEY").getInt(null ));
-            }
-        } catch (Exception e) {
-        }
+//        try {
+//            if (ViewConfiguration.class.getDeclaredMethod(
+//                    "hasPermanentMenuKey", null) != null
+//                    && !ViewConfiguration. get(this).hasPermanentMenuKey()) {
+//                getWindow().addFlags(
+//                        WindowManager.LayoutParams. class.getField(
+//                                "FLAG_NEEDS_MENU_KEY").getInt(null ));
+//            }
+//        } catch (Exception e) {
+//        }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
     }
 
 
@@ -514,129 +440,55 @@ public class VideoActivity extends Activity implements OnClickListener, OnComple
         unregisterReceiver(mReceiver);
     }
 
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        Log.d(TAG, "surfaceCreated: mCurrentPosition:" + mCurrentPosition + ", playState:" + getPlayStateStr(mPlayState) + ", mNeedRestore:" + mNeedRestore);
 
-    private void startDownloadVideo(){
-        showLoadingView();
+        //如果暂停切后台，再切回前台的话，需要保持暂停
+        if (mNeedRestore) {
+            return;
+        }
+
 
         new Thread(new Runnable() {
-
             @Override
             public void run() {
-//                FileOutputStream out = null;
-                InputStream is = null;
-                RandomAccessFile mediaFile = null;
+
+                new File(C.getBufferDir()).mkdirs();//创建预加载文件的文件夹
+                ProxyUtils.clearCacheFile(C.getBufferDir());//清除前面的预加载文件
+
+                //初始化代理服务器
+                mProxy = new HttpGetProxy(9980);
+                mProxy.asynStartProxy();
+                String[] urls = mProxy.getLocalURL(mVideoPath);
+                String mp4Url = urls[0];
+                mProxyUrl = urls[1];
 
                 try {
-                    String remoteUrl = mVideoPath;
-
-
-                    URL url = new URL(remoteUrl);
-                    HttpURLConnection httpConnection = (HttpURLConnection) url
-                            .openConnection();
-
-                    Log.d(TAG, "url: " + remoteUrl + " +/n mLocalUrl: " + mLocalUrl);
-
-                    File cacheFile = new File(mLocalUrl);
-
-                    if (!cacheFile.exists()) {
-                        cacheFile.getParentFile().mkdirs();
-                        cacheFile.createNewFile();
-                    }
-
-                    readSize = cacheFile.length();
-//                    out = new FileOutputStream(cacheFile, true);
-
-                    httpConnection.setRequestProperty("User-Agent", "NetFox");
-                    httpConnection.setRequestProperty("RANGE", "bytes="
-                            + readSize + "-");
-
-                    is = httpConnection.getInputStream();
-
-                    mediaLength = httpConnection.getContentLength();
-
-                    Log.d(TAG, "video mediaLength=" + mediaLength + ", readSize = " + readSize);
-
-                    if (mediaLength == -1) {
-                        return;
-                    }
-
-                    mediaLength += readSize;
-
-                    mediaFile = new RandomAccessFile(cacheFile, "rw");
-                    mediaFile.setLength(mediaLength);
-
-                    byte buf[] = new byte[4 * 1024];
-                    int size = 0;
-                    long lastReadSize = 0;
-
-                    mHandler.sendEmptyMessage(VIDEO_STATE_UPDATE);
-
-                    while ((size = is.read(buf)) != -1) {
-                        try {
-                            mediaFile.write(buf, 0, size);
-                            readSize += size;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        if (!isready) {
-                            if ((readSize - lastReadSize) > READY_BUFF) {
-                                lastReadSize = readSize;
-                                mHandler.sendEmptyMessage(CACHE_VIDEO_READY);
-                                Log.d(TAG, "video ready to play");
-                            }
-                        } else {
-                            if ((readSize - lastReadSize) > CACHE_BUFF
-                                    * (errorCnt + 1)) {
-                                lastReadSize = readSize;
-                                mHandler.sendEmptyMessage(CACHE_VIDEO_UPDATE);
-//                                Log.d(TAG, "video cache update");
-                            }
-                        }
-                    }
-
-                    Log.d(TAG, "video download finish...");
-                    mHandler.sendEmptyMessage(CACHE_VIDEO_END);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-//                    if (out != null) {
-//                        try {
-//                            out.close();
-//                        } catch (IOException e) {
-//                            //
-//                        }
-//                    }
-                    if (mediaFile != null) {
-                        try {
-                            mediaFile.close();
-                        } catch (Exception e) {
-
-                        }
-                    }
-
-                    if (is != null) {
-                        try {
-                            is.close();
-                        } catch (IOException e) {
-                            //
-                        }
-                    }
+                    String prebufferFilePath = mProxy.prebuffer(mp4Url,
+                            5 * 1024 * 1024);
+                    Log.e(TAG, "预加载文件：" + prebufferFilePath);
+                } catch (Exception ex) {
+                    Log.e(TAG, "", ex);
                 }
+
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mCurrentPosition > 0) {
+                            play(mCurrentPosition);
+                            mCurrentPosition = 0;
+                        } else {
+                            play(0);
+                        }
+                    }
+                }, 3000);
 
             }
         }).start();
-    }
 
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        Log.d(TAG, "surfaceCreated: mCurrentPosition:" + mCurrentPosition + ", playState:" +
-                getPlayStateStr(mPlayState) + ", mNeedRestore:" + mNeedRestore);
+        showLoadingView();
 
-        //如果暂停切后台，再切回前台的话，需要保持暂停
-//        if (mNeedRestore) {
-//            return;
-//        }
 //        if (mCurrentPosition > 0) {
 //            play(mCurrentPosition);
 //            mCurrentPosition = 0;
@@ -644,11 +496,13 @@ public class VideoActivity extends Activity implements OnClickListener, OnComple
 //            play(0);
 //        }
 
-        initMediaPlayer();
+//
+//        mDialog = new ProgressDialog(this);
+//        // Set progressbar message
+//        mDialog.setMessage("正在缓冲...");
+//        mDialog.setIndeterminate(false);
+//        mDialog.show();
 
-        showLoadingView();
-
-        startDownloadVideo();
     }
 
     @Override
@@ -674,8 +528,6 @@ public class VideoActivity extends Activity implements OnClickListener, OnComple
     }
 
     void releaseMediaPlayer() {
-        Log.d(TAG, "releaseMediaPlayer");
-
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
@@ -776,41 +628,27 @@ public class VideoActivity extends Activity implements OnClickListener, OnComple
     public void onCompletion(MediaPlayer mp) {
         Log.d(TAG, "MediaPlayer onCompletion");
 
-//        mSeekBar.setProgress(mDuration);
-//
-//        changePlayState(PLAY_STATE_IDLE);
-//        startShowing();
-//        mMediaPlayer.start();
+        mSeekBar.setProgress(mDuration);
 
-//        if (mMediaPlayer != null) {
-//            mCurrentPosition = mMediaPlayer.getCurrentPosition();
-//
-//            Log.d(TAG, "MediaPlayer onCompletion, mCurrentPosition=" + mCurrentPosition + ", readSize = " + readSize);
-//
-//            if (mCurrentPosition < mDuration) {
-//                if (readSize == mediaLength) {
-//                    play(mCurrentPosition);
-//                }
-//            }
-//        }
+        changePlayState(PLAY_STATE_IDLE);
+        startShowing();
     }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        Log.e(TAG, "MediaPlayer onError what=" + what + ", extra=" + extra);
-
-        if (what == MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK) {
-            Log.e(TAG, "onError MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK");
-        }
+        Log.e(TAG, "MediaPlayer onError what=" + what + ",extra=" + extra);
 
         changePlayState(PLAY_STATE_ERROR);
-
-        iserror = true;
 
         reset();
 
         handleError();
 
+//        if (extra == MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK) {
+//
+//        } else {
+//
+//        }
         return false;
     }
 
@@ -829,33 +667,6 @@ public class VideoActivity extends Activity implements OnClickListener, OnComple
         }
     };
 
-    private MediaPlayer.OnInfoListener mOnInfoListener = new MediaPlayer.OnInfoListener() {
-        @Override
-        public boolean onInfo(MediaPlayer mp, int what, int extra) {
-
-            Log.d(TAG, "MediaPlayer onInfo what = " + what + ", extra = " + extra);
-
-            return false;
-        }
-    };
-
-    void initMediaPlayer(){
-        Log.d(TAG, "initMediaPlayer");
-
-        if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
-
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mMediaPlayer.setDisplay(mSurfaceView.getHolder());
-        mMediaPlayer.setOnCompletionListener(this);
-        mMediaPlayer.setOnErrorListener(this);
-        mMediaPlayer.setOnBufferingUpdateListener(mOnBufferListener);
-    }
-
     void play(final int msec) {
 
         try {
@@ -865,14 +676,24 @@ public class VideoActivity extends Activity implements OnClickListener, OnComple
                 return;
             }
 
+            showLoadingView();
+
             Log.d(TAG, "#play#, msec=" + msec);
 
-            mMediaPlayer.reset();
-//            mMediaPlayer.setDataSource(mLocalUrl);
+            if (mMediaPlayer != null) {
+                mMediaPlayer.stop();
+                mMediaPlayer.release();
+                mMediaPlayer = null;
+            }
 
-            FileDescriptor fd = new FileInputStream(new File(mLocalUrl)).getFD();
-            mMediaPlayer.setDataSource(fd, 0, mediaLength);
-
+            mMediaPlayer = new MediaPlayer();
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mMediaPlayer.setDisplay(mSurfaceView.getHolder());
+            mMediaPlayer.setDataSource(mProxyUrl);
+//            mMediaPlayer.setDataSource(mVideoPath);
+            mMediaPlayer.setOnCompletionListener(this);
+            mMediaPlayer.setOnErrorListener(this);
+            mMediaPlayer.setOnBufferingUpdateListener(mOnBufferListener);
             mMediaPlayer.prepareAsync();
             mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
 

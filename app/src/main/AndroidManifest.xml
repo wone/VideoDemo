@@ -56,8 +56,12 @@
             android:label="@string/title_activity_music_test_play" >
         </activity>
         <activity
-            android:name=".VideoActivity"
+            android:name=".VideoDownloadActivity"
              >
+        </activity>
+        <activity
+            android:name=".VideoProxyActivity"
+            >
         </activity>
     </application>
 

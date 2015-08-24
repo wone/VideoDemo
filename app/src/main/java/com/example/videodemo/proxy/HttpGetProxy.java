@@ -119,6 +119,9 @@ public class HttpGetProxy {
         }
 
         String[] result = new String[]{targetUrl, localUrl};
+
+        Log.d(TAG, "getLocalURL(), result="+result.toString());
+
         return result;
     }
 

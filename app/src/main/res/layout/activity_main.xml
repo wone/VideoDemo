@@ -80,10 +80,18 @@
         android:layout_marginTop="20dp"/>
 
     <Button
-        android:id="@+id/videoCacheBtn"
+        android:id="@+id/videoDownloadBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="VideoCacheDemo"
+        android:text="边缓存边播放"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="20dp"/>
+
+    <Button
+        android:id="@+id/videoProxyBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="代理边下边播"
         android:textColor="#FFFFFF"
         android:layout_marginTop="20dp"/>
 
