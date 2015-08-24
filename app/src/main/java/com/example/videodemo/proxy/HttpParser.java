@@ -82,8 +82,10 @@ public class HttpParser {
         result._body = result._body.replace(localHost, remoteHost);
 
         // 把代理服务器端口改为原URL端口
-        if (remotePort == -1)
-            result._body = result._body.replace(":" + localPort, "");
+        if (remotePort == -1) {
+            String replace = result._body.replace(":" + localPort, "");
+            result._body = replace;
+        }
         else
             result._body = result._body.replace(":" + localPort, ":" + remotePort);
 

@@ -27,6 +27,7 @@ public class MainActivity extends Activity implements OnClickListener{
 		this.findViewById(R.id.videoOnlineBtn).setOnClickListener(this);
 		this.findViewById(R.id.musicOnlineBtn).setOnClickListener(this);
 		this.findViewById(R.id.videoDownloadBtn).setOnClickListener(this);
+		this.findViewById(R.id.videoProxyBtn).setOnClickListener(this);
 
 //		Log.e("VideoDemo", "testBegin:" + "\r\n\r\n" + ":testEnd");
 	}
@@ -58,6 +59,9 @@ public class MainActivity extends Activity implements OnClickListener{
 			break;
 		case R.id.videoDownloadBtn:
 			startActivity(new Intent(this, VideoDownloadActivity.class));
+			break;
+		case R.id.videoProxyBtn:
+			startActivity(new Intent(this, VideoProxyActivity.class));
 			break;
 		}
 	}

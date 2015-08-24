@@ -59,6 +59,10 @@
             android:name=".VideoDownloadActivity"
              >
         </activity>
+        <activity
+            android:name=".VideoProxyActivity"
+            >
+        </activity>
     </application>
 
 </manifest>

@@ -87,4 +87,12 @@
         android:textColor="#FFFFFF"
         android:layout_marginTop="20dp"/>
 
+    <Button
+        android:id="@+id/videoProxyBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="代理边下边播"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="20dp"/>
+
 </LinearLayout>

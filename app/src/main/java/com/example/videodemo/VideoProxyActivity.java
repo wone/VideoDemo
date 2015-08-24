@@ -24,7 +24,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.WindowManager;
@@ -38,15 +37,20 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.videodemo.proxy.C;
 import com.example.videodemo.proxy.HttpGetProxy;
+import com.example.videodemo.proxy.ProxyUtils;
 
-public class VideoOnlineActivity extends Activity implements OnClickListener, OnCompletionListener, OnErrorListener, SurfaceHolder.Callback {
-    static final String TAG = "VideoDemo.VideoOnlineActivity";
+import java.io.File;
+
+
+public class VideoProxyActivity extends Activity implements OnClickListener, OnCompletionListener, OnErrorListener, SurfaceHolder.Callback {
+    static final String TAG = "VideoDemo.VideoProxyActivity";
 
     //http://ws.a.yximgs.com/upic/2015/07/15/17/BMjAxNTA3MTUxNzQwMjdfMTcwNjM3NjZfMjk5MDE5MjY2XzFfMw==.mp4
     //http://www.androidbegin.com/tutorial/AndroidCommercial.3gp
     //https://github.com/wone/VideoDemo/blob/master/files/test1.mp4
-    public static String VIDEO_URL = "https://github.com/wone/VideoDemo/blob/master/files/test1.mp4";
+    public static String VIDEO_URL = "http://ws.a.yximgs.com/upic/2015/07/15/17/BMjAxNTA3MTUxNzQwMjdfMTcwNjM3NjZfMjk5MDE5MjY2XzFfMw==.mp4";
 
     RelativeLayout mRoot;
     SurfaceView mSurfaceView;
@@ -446,51 +450,53 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
         }
 
 
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                new File(C.getBufferDir()).mkdirs();//创建预加载文件的文件夹
-//                ProxyUtils.clearCacheFile(C.getBufferDir());//清除前面的预加载文件
-//
-//                //初始化代理服务器
-//                mProxy = new HttpGetProxy(9980);
-//                mProxy.asynStartProxy();
-//                String[] urls = mProxy.getLocalURL(mVideoPath);
-//                String mp4Url = urls[0];
-//                mProxyUrl = urls[1];
-//
-//                try {
-//                    String prebufferFilePath = mProxy.prebuffer(mp4Url,
-//                            5 * 1024 * 1024);
-//                    Log.e(TAG, "预加载文件：" + prebufferFilePath);
-//                } catch (Exception ex) {
-//                    Log.e(TAG, "", ex);
-//                }
-//
-//                mHandler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        if (mCurrentPosition > 0) {
-//                            play(mCurrentPosition);
-//                            mCurrentPosition = 0;
-//                        } else {
-//                            play(0);
-//                        }
-//                    }
-//                }, 3000);
-//
-//            }
-//        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-        if (mCurrentPosition > 0) {
-            play(mCurrentPosition);
-            mCurrentPosition = 0;
-        } else {
-            play(0);
-        }
+                new File(C.getBufferDir()).mkdirs();//创建预加载文件的文件夹
+                ProxyUtils.clearCacheFile(C.getBufferDir());//清除前面的预加载文件
 
+                //初始化代理服务器
+                mProxy = new HttpGetProxy(9980);
+                mProxy.asynStartProxy();
+                String[] urls = mProxy.getLocalURL(mVideoPath);
+                String mp4Url = urls[0];
+                mProxyUrl = urls[1];
 
+                try {
+                    String prebufferFilePath = mProxy.prebuffer(mp4Url,
+                            5 * 1024 * 1024);
+                    Log.e(TAG, "预加载文件：" + prebufferFilePath);
+                } catch (Exception ex) {
+                    Log.e(TAG, "", ex);
+                }
+
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mCurrentPosition > 0) {
+                            play(mCurrentPosition);
+                            mCurrentPosition = 0;
+                        } else {
+                            play(0);
+                        }
+                    }
+                }, 3000);
+
+            }
+        }).start();
+
+        showLoadingView();
+
+//        if (mCurrentPosition > 0) {
+//            play(mCurrentPosition);
+//            mCurrentPosition = 0;
+//        } else {
+//            play(0);
+//        }
+
+//
 //        mDialog = new ProgressDialog(this);
 //        // Set progressbar message
 //        mDialog.setMessage("正在缓冲...");
@@ -683,7 +689,8 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setDisplay(mSurfaceView.getHolder());
-            mMediaPlayer.setDataSource(mVideoPath);
+            mMediaPlayer.setDataSource(mProxyUrl);
+//            mMediaPlayer.setDataSource(mVideoPath);
             mMediaPlayer.setOnCompletionListener(this);
             mMediaPlayer.setOnErrorListener(this);
             mMediaPlayer.setOnBufferingUpdateListener(mOnBufferListener);
