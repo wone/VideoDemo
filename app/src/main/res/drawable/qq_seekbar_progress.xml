@@ -17,7 +17,7 @@
                 android:insetTop="5dp" >
                 <shape>
                     <corners android:radius="20dp" />
-                    <solid android:color="#40FFFFFF" />
+                    <solid android:color="#00FF0000" />
                 </shape>
             </inset>
         </clip>

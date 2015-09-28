@@ -1,98 +1,115 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#FFFFFF"
-    tools:context=".MainActivity" >
-    
-    <com.example.videodemo.FadingView
-        android:id="@+id/background"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-         />
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        tools:context=".MainActivity">
 
-     <SeekBar
-         android:id="@+id/seekBar"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:maxHeight="12dp"
-         android:minHeight="12dp"
-         android:progressDrawable="@drawable/qq_seekbar_progress"
-         android:paddingLeft="10dp"
-         android:paddingRight="10dp"
-         android:thumb="@drawable/seekbar_thumb"
-         android:thumbOffset="10dp"
-         android:visibility="gone"
-         />
+        <com.example.videodemo.FadingView
+            android:id="@+id/background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            />
 
-     
-     <Button 
-         android:id="@+id/previewBtn"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:text="预览界面"
-         android:textColor="#FFFFFF"
-         />
-     
-     <Button 
-         android:id="@+id/playBtn"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:text="播放界面"
-         android:textColor="#FFFFFF"
-         android:layout_marginTop="20dp"
-         />
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="12dp"
+            android:minHeight="12dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:progressDrawable="@drawable/qq_seekbar_progress"
+            android:thumb="@drawable/seekbar_thumb"
+            android:thumbOffset="10dp"
+            android:visibility="gone"
+            />
 
-    <Button
-        android:id="@+id/floatVideoBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="悬浮视频1"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="20dp"
-        />
 
-    <Button
-        android:id="@+id/floatVideo2Btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="悬浮视频2"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="20dp"
-        />
+        <Button
+            android:id="@+id/previewBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="预览界面"
+            android:textColor="#FFFFFF"
+            />
 
-    <Button
-        android:id="@+id/videoOnlineBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="在线视频"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="20dp"/>
+        <Button
+            android:id="@+id/playBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="播放界面"
+            android:textColor="#FFFFFF"
+            />
 
-    <Button
-        android:id="@+id/musicOnlineBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="在线音频"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="20dp"/>
+        <Button
+            android:id="@+id/floatVideoBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="悬浮视频1"
+            android:textColor="#FFFFFF"
+            />
 
-    <Button
-        android:id="@+id/videoDownloadBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="边缓存边播放"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="20dp"/>
+        <Button
+            android:id="@+id/floatVideo2Btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="悬浮视频2"
+            android:textColor="#FFFFFF"
+            />
 
-    <Button
-        android:id="@+id/videoProxyBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="代理边下边播"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="20dp"/>
+        <Button
+            android:id="@+id/videoOnlineBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="在线视频"
+            android:textColor="#FFFFFF"/>
 
-</LinearLayout>
+        <Button
+            android:id="@+id/musicOnlineBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="在线音频"
+            android:textColor="#FFFFFF"/>
+
+        <Button
+            android:id="@+id/videoDownloadBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="边缓存边播放"
+            android:textColor="#FFFFFF"/>
+
+        <Button
+            android:id="@+id/videoProxyBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="代理边下边播"
+            android:textColor="#FFFFFF"/>
+
+        <Button
+            android:id="@+id/countDownBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="countDownView"
+            android:textColor="#FFFFFF"/>
+
+    </LinearLayout>
+
+</ScrollView>
+

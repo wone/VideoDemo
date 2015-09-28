@@ -26,7 +26,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.WindowManager;
@@ -41,8 +40,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -145,6 +142,10 @@ public class VideoDownloadActivity extends Activity implements OnClickListener, 
 //                    Log.d(TAG, "handleMessage VIDEO_STATE_UPDATE");
 
                     double cachepercent = readSize * 100.00 / mediaLength * 1.0;
+//                    if (mSeekBar != null) {
+                        mSeekBar.setSecondaryProgress((int) cachepercent);
+//                    }
+
                     String s = String.format("已缓存: [%.2f%%]", cachepercent);
 
                     if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
@@ -347,6 +348,10 @@ public class VideoDownloadActivity extends Activity implements OnClickListener, 
         mBottomUpAnimation.setAnimationListener(mShowAnimationListener);
 
         mTopUpAnimation.setAnimationListener(mHideAnimationListener);
+
+        //For Test
+        mTitleBar.setVisibility(View.VISIBLE);
+        mOperatorBar.setVisibility(View.VISIBLE);
 
         //监听锁屏和音视频通话的广播
         IntentFilter filter = new IntentFilter();
@@ -584,6 +589,12 @@ public class VideoDownloadActivity extends Activity implements OnClickListener, 
                                 lastReadSize = readSize;
                                 mHandler.sendEmptyMessage(CACHE_VIDEO_READY);
                                 Log.d(TAG, "video ready to play");
+
+//                                try {
+//                                    Thread.sleep(5000);
+//                                } catch (Exception e){ }
+
+                                Log.d(TAG, "Thread sleep end.");
                             }
                         } else {
                             if ((readSize - lastReadSize) > CACHE_BUFF
@@ -868,10 +879,10 @@ public class VideoDownloadActivity extends Activity implements OnClickListener, 
             Log.d(TAG, "#play#, msec=" + msec);
 
             mMediaPlayer.reset();
-//            mMediaPlayer.setDataSource(mLocalUrl);
+            mMediaPlayer.setDataSource(mLocalUrl);
 
-            FileDescriptor fd = new FileInputStream(new File(mLocalUrl)).getFD();
-            mMediaPlayer.setDataSource(fd, 0, mediaLength);
+//            FileDescriptor fd = new FileInputStream(new File(mLocalUrl)).getFD();
+//            mMediaPlayer.setDataSource(fd, 0, mediaLength);
 
             mMediaPlayer.prepareAsync();
             mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
