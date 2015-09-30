@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -63,6 +64,7 @@ public class WaveShakeView extends View{
     int B = 400;
     float C = 0.6f;//角速度越小，波形越稀疏
     float D = 25; //相邻曲线相位偏差
+    float X = 1.0f;
 
     /**
      * Implement this to do your drawing.
@@ -93,6 +95,8 @@ public class WaveShakeView extends View{
         int x = 0;
         int y = 0;
 
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+
         //第一条曲线
         path.reset();
         for (int i = 0; i < mWidth; i++) {
@@ -103,7 +107,9 @@ public class WaveShakeView extends View{
                 path.moveTo(x, y);
             }
             //用每个x求得每个y，用quadTo方法连接成一条贝塞尔曲线
-            path.quadTo(x, y, x + 1, y);
+//            path.quadTo(x + 1, y+1, x + 1, y);
+
+            path.lineTo(x + 1, y);
         }
         canvas.drawPath(path, mPaint1);
 
@@ -111,13 +117,14 @@ public class WaveShakeView extends View{
         path.reset();
         for (int i = 0; i < mWidth; i++) {
             x = i;
-            y = (int) (A * Math.sin((i * C + mAngle * 1.1 + D) * Math.PI / 180) + B);
+            y = (int) (A * Math.sin((i * C + mAngle * X + D) * Math.PI / 180) + B);
             if (i == 0) {
                 //x=0的时候，即左上角的点，移动画笔于此
                 path.moveTo(x, y);
             }
             //用每个x求得每个y，用quadTo方法连接成一条贝塞尔曲线
-            path.quadTo(x, y, x + 1, y);
+//            path.quadTo(x, y, x + 1, y);
+            path.lineTo(x + 1, y);
         }
         canvas.drawPath(path, mPaint2);
 
@@ -126,13 +133,14 @@ public class WaveShakeView extends View{
         path.reset();
         for (int i = 0; i < mWidth; i++) {
             x = i;
-            y = (int) (A * Math.sin((i * C + mAngle * 1.1 + 2 * D) * Math.PI / 180) + B);
+            y = (int) (A * Math.sin((i * C + mAngle * X + 2 * D) * Math.PI / 180) + B);
             if (i == 0) {
                 //x=0的时候，即左上角的点，移动画笔于此
                 path.moveTo(x, y);
             }
             //用每个x求得每个y，用quadTo方法连接成一条贝塞尔曲线
-            path.quadTo(x, y, x + 1, y);
+//            path.quadTo(x, y, x + 1, y);
+            path.lineTo(x + 1, y);
         }
         canvas.drawPath(path, mPaint2);
 
@@ -140,13 +148,14 @@ public class WaveShakeView extends View{
         path.reset();
         for (int i = 0; i < mWidth; i++) {
             x = i;
-            y = (int) (A * Math.sin((i * C + mAngle * 1.1 + 3 * D) * Math.PI / 180) + B);
+            y = (int) (A * Math.sin((i * C + mAngle * X + 3 * D) * Math.PI / 180) + B);
             if (i == 0) {
                 //x=0的时候，即左上角的点，移动画笔于此
                 path.moveTo(x, y);
             }
             //用每个x求得每个y，用quadTo方法连接成一条贝塞尔曲线
-            path.quadTo(x, y, x + 1, y);
+//            path.quadTo(x, y, x + 1, y);
+            path.lineTo(x + 1, y);
         }
         canvas.drawPath(path, mPaint2);
 
@@ -154,13 +163,14 @@ public class WaveShakeView extends View{
         path.reset();
         for (int i = 0; i < mWidth; i++) {
             x = i;
-            y = (int) (A * Math.sin((i * C + mAngle * 1.1 + 4 * D) * Math.PI / 180) + B);
+            y = (int) (A * Math.sin((i * C + mAngle * X + 4 * D) * Math.PI / 180) + B);
             if (i == 0) {
                 //x=0的时候，即左上角的点，移动画笔于此
                 path.moveTo(x, y);
             }
             //用每个x求得每个y，用quadTo方法连接成一条贝塞尔曲线
-            path.quadTo(x, y, x + 1, y);
+//            path.quadTo(x, y, x + 1, y);
+            path.lineTo(x + 1, y);
         }
         canvas.drawPath(path, mPaint2);
     }
@@ -307,7 +317,7 @@ public class WaveShakeView extends View{
 //        startAnimation();
     }
 
-    private int mAngle = 0;
+    volatile private int mAngle = 0;
 
     volatile private boolean mRun;
 
@@ -315,7 +325,8 @@ public class WaveShakeView extends View{
         return mRun;
     }
 
-    private void runShakeAnimation(){
+    public void runBeginAnimation(){
+        A = 0;
         mRun = true;
 
         new Thread(new Runnable() {
@@ -327,9 +338,10 @@ public class WaveShakeView extends View{
                     mAngle += 12;
                     mAngle = mAngle % 360;
 
-//                    D += 3;
-//                    D = D % 15 + 10;
-
+                    //控制振幅
+                    if (A < 32) {
+                        A += 1;
+                    }
 
                     WaveShakeView.this.postInvalidate();
 
@@ -342,33 +354,6 @@ public class WaveShakeView extends View{
             }
 
         }).start();
-    }
-
-
-    public void runBeginAnimation(){
-        A = 0;
-
-        runShakeAnimation();
-
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                while (A < 35) {
-                    A += 1;
-
-                    WaveShakeView.this.postInvalidate();
-
-                    try {
-                        Thread.sleep(16);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-        }).start();
-
     }
 
     public void runEndAnimation(){
