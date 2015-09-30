@@ -20,9 +20,9 @@ public class WaveViewActivity extends Activity {
             @Override
             public void onClick(View v) {
                 if (mWaveShakeView.isAnimationRuning()) {
-                    mWaveShakeView.runEndAnimation();
+                    mWaveShakeView.stopAnimation();
                 } else {
-                    mWaveShakeView.runBeginAnimation();
+                    mWaveShakeView.startAnimation();
                 }
             }
         });
@@ -55,7 +55,7 @@ public class WaveViewActivity extends Activity {
         super.onDestroy();
 
         if (mWaveShakeView.isAnimationRuning()) {
-            mWaveShakeView.runEndAnimation();
+            mWaveShakeView.stopAnimation();
         }
     }
 }

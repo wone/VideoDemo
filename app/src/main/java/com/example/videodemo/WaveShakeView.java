@@ -17,6 +17,13 @@ public class WaveShakeView extends View{
 
     private static final String TAG = "WaveShakeView";
 
+    public static final int ANIMATION_NONE = 0;
+    public static final int ANIMATION_START = 1;
+    public static final int ANIMATION_MOVING = 2;
+    public static final int ANIMATION_END = 3;
+
+    private int mAinmationStep = ANIMATION_NONE;
+
     private Paint mPaint1;
     private Paint mPaint2;
 
@@ -59,6 +66,7 @@ public class WaveShakeView extends View{
     }
 
 
+    volatile int mAngle = 0;
 
     float A = 0;
     int B = 400;
@@ -82,15 +90,13 @@ public class WaveShakeView extends View{
 
         long start = System.currentTimeMillis();
 
-//        A = 40;
-
-        drawSin3(canvas, mPath);
+        drawWave(canvas, mPath);
 
         long cost = System.currentTimeMillis() - start;
         Log.d(TAG, "onDraw(): cost =" + cost + "ms");
     }
 
-    private void drawSin3(Canvas canvas, Path path){
+    private void drawWave(Canvas canvas, Path path){
 
         int x = 0;
         int y = 0;
@@ -106,9 +112,6 @@ public class WaveShakeView extends View{
                 //x=0的时候，即左上角的点，移动画笔于此
                 path.moveTo(x, y);
             }
-            //用每个x求得每个y，用quadTo方法连接成一条贝塞尔曲线
-//            path.quadTo(x + 1, y+1, x + 1, y);
-
             path.lineTo(x + 1, y);
         }
         canvas.drawPath(path, mPaint1);
@@ -122,14 +125,12 @@ public class WaveShakeView extends View{
                 //x=0的时候，即左上角的点，移动画笔于此
                 path.moveTo(x, y);
             }
-            //用每个x求得每个y，用quadTo方法连接成一条贝塞尔曲线
-//            path.quadTo(x, y, x + 1, y);
             path.lineTo(x + 1, y);
         }
         canvas.drawPath(path, mPaint2);
 
 
-        //
+        //第三条曲线
         path.reset();
         for (int i = 0; i < mWidth; i++) {
             x = i;
@@ -139,12 +140,11 @@ public class WaveShakeView extends View{
                 path.moveTo(x, y);
             }
             //用每个x求得每个y，用quadTo方法连接成一条贝塞尔曲线
-//            path.quadTo(x, y, x + 1, y);
             path.lineTo(x + 1, y);
         }
         canvas.drawPath(path, mPaint2);
 
-        //
+        //第四条曲线
         path.reset();
         for (int i = 0; i < mWidth; i++) {
             x = i;
@@ -154,12 +154,11 @@ public class WaveShakeView extends View{
                 path.moveTo(x, y);
             }
             //用每个x求得每个y，用quadTo方法连接成一条贝塞尔曲线
-//            path.quadTo(x, y, x + 1, y);
             path.lineTo(x + 1, y);
         }
         canvas.drawPath(path, mPaint2);
 
-        //
+        //第五条曲线
         path.reset();
         for (int i = 0; i < mWidth; i++) {
             x = i;
@@ -169,155 +168,11 @@ public class WaveShakeView extends View{
                 path.moveTo(x, y);
             }
             //用每个x求得每个y，用quadTo方法连接成一条贝塞尔曲线
-//            path.quadTo(x, y, x + 1, y);
             path.lineTo(x + 1, y);
         }
         canvas.drawPath(path, mPaint2);
     }
 
-    private void drawSin2(Canvas canvas, Paint paint){
-
-        float length = 800;
-        float height = 200;
-
-        float startX, startY;
-        float controlX1, controlY1;
-        float endX1, endY1;
-
-        float controlX2, controlY2;
-        float endX2, endY2;
-
-        Path path = new Path();
-
-        //a->b
-        startX = 0;
-        startY = height;
-        path.moveTo(startX, startY);
-        endX1 = startX +length/2;
-        endY1 = startY;
-        controlX1 = (startX + endX1) / 2;
-        controlY1 = 0;
-        path.quadTo(controlX1, controlY1, endX1, endY1);
-
-        //b->c
-        endX2 = startX +length;
-        endY2 = startY;
-        controlX2 = (endX1 + endX2) / 2;
-        controlY2 = height * 2;
-        path.quadTo(controlX2, controlY2, endX2, endY2);
-
-        canvas.drawPath(path, paint);
-        //////////////////
-
-        path.reset();
-
-        //a->b
-        startX = 30;
-        startY = height;
-        path.moveTo(startX, startY);
-        endX1 = startX +length/2;
-        endY1 = startY;
-        controlX1 = (startX + endX1) / 2;
-        controlY1 = 0;
-        path.quadTo(controlX1, controlY1, endX1, endY1);
-
-        //b->c
-        endX2 = startX +length;
-        endY2 = startY;
-        controlX2 = (endX1 + endX2) / 2;
-        controlY2 = height * 2;
-        path.quadTo(controlX2, controlY2, endX2, endY2);
-
-        canvas.drawPath(path, paint);
-
-        //////////////////
-
-        path.reset();
-
-        //a->b
-        startX = 60;
-        startY = height;
-        path.moveTo(startX, startY);
-        endX1 = startX +length/2;
-        endY1 = startY;
-        controlX1 = (startX + endX1) / 2;
-        controlY1 = 0;
-        path.quadTo(controlX1, controlY1, endX1, endY1);
-
-        //b->c
-        endX2 = startX +length;
-        endY2 = startY;
-        controlX2 = (endX1 + endX2) / 2;
-        controlY2 = height * 2;
-        path.quadTo(controlX2, controlY2, endX2, endY2);
-
-        canvas.drawPath(path, paint);
-
-
-        //////////////////
-
-        path.reset();
-
-        //a->b
-        startX = 90;
-        startY = height;
-        path.moveTo(startX, startY);
-        endX1 = startX +length/2;
-        endY1 = startY;
-        controlX1 = (startX + endX1) / 2;
-        controlY1 = 0;
-        path.quadTo(controlX1, controlY1, endX1, endY1);
-
-        //b->c
-        endX2 = startX +length;
-        endY2 = startY;
-        controlX2 = (endX1 + endX2) / 2;
-        controlY2 = height * 2;
-        path.quadTo(controlX2, controlY2, endX2, endY2);
-
-        canvas.drawPath(path, paint);
-
-    }
-
-    private  void drawSin(Canvas canvas){
-
-        long start = System.currentTimeMillis();
-
-        int x, y1, y2 = 0;
-
-        double lineX = 0;
-        double lineY1 = 0;
-        double lineY2 = 0;
-
-
-        for (int i = 0; i < mWidth; ) {
-
-            lineX = i;
-            lineY1 = A * Math.sin((i * D + mAngle) * Math.PI / 180) + B;
-            lineY2 = A * Math.sin((i * D + mAngle + C) * Math.PI / 180) + B;
-
-            x = (int) lineX;
-            y1 = (int) (lineY1 + mHeight / 2);
-            y2 = (int) (lineY2 + mHeight / 2);
-
-            Log.d(TAG, "onDraw(), lineX = " + lineX + ", lineY1 = " + lineY1 + ", lineY2 = " + lineY2
-                    + ",  y1 = "+ y1 +", y2 = "+ y2);
-
-//            canvas.drawLine(x, y1, x, y2, mPaint);
-
-            canvas.drawPoint(x, y1, mPaint1);
-
-            i += 2;
-        }
-
-        long cost = System.currentTimeMillis() - start;
-
-        Log.d(TAG, "onDraw(): cost =" + cost);
-
-//        startAnimation();
-    }
-
-    volatile private int mAngle = 0;
 
     volatile private boolean mRun;
 
@@ -325,45 +180,40 @@ public class WaveShakeView extends View{
         return mRun;
     }
 
-    public void runBeginAnimation(){
-        A = 0;
-        mRun = true;
-
+    private void startAnimationThread(){
         new Thread(new Runnable() {
 
             @Override
             public void run() {
-                while (mRun) {
+
+                mRun = true;
+
+                while (true) {
+
+                    if (mAinmationStep == ANIMATION_NONE) {
+                        break;
+                    } else if (mAinmationStep == ANIMATION_START) {
+
+                        if (A < 32) {
+                            A += 1;
+                        } else {
+                            mAinmationStep = ANIMATION_MOVING;
+                        }
+
+                    } else if (mAinmationStep == ANIMATION_END) {
+
+                        if (A > 0) {
+                            A -= 1;
+                        } else {
+                            A = 0;
+                            mAinmationStep = ANIMATION_NONE;
+                            break;
+                        }
+                    }
+
                     //控制波形左右偏移的速度，越大速度越快
                     mAngle += 12;
                     mAngle = mAngle % 360;
-
-                    //控制振幅
-                    if (A < 32) {
-                        A += 1;
-                    }
-
-                    WaveShakeView.this.postInvalidate();
-
-                    try {
-                        Thread.sleep(16);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-        }).start();
-    }
-
-    public void runEndAnimation(){
-
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                while (A > 0) {
-                    A -= 1;
 
                     WaveShakeView.this.postInvalidate();
 
@@ -375,8 +225,22 @@ public class WaveShakeView extends View{
                 }
 
                 mRun = false;
+                A = 0;
             }
 
         }).start();
+    }
+
+    public void startAnimation(){
+        mAinmationStep = ANIMATION_START;
+        A = 0;
+
+        if (!mRun) {
+            startAnimationThread();
+        }
+    }
+
+    public void stopAnimation(){
+        mAinmationStep = ANIMATION_END;
     }
 }
