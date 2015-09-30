@@ -68,11 +68,10 @@ public class WaveShakeView extends View{
 
     volatile int mAngle = 0;
 
-    float A = 0;
-    int B = 400;
+    float A = 0;  //波幅
+    int B = 0;  //波纹线原点的y坐标
     float C = 0.6f;//角速度越小，波形越稀疏
     float D = 25; //相邻曲线相位偏差
-    float X = 1.0f;
 
     /**
      * Implement this to do your drawing.
@@ -88,9 +87,17 @@ public class WaveShakeView extends View{
 
 //        Log.d(TAG, "onDraw(), mWdith = " + mWidth + ", mHeight = " + mHeight );
 
+        if (B == 0) {
+            B = mHeight / 2;
+        }
+
         long start = System.currentTimeMillis();
 
-        drawWave(canvas, mPath);
+        if (mAinmationStep != ANIMATION_NONE) {
+            drawWave(canvas, mPath);
+        } else {
+            canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        }
 
         long cost = System.currentTimeMillis() - start;
         Log.d(TAG, "onDraw(): cost =" + cost + "ms");
@@ -101,9 +108,7 @@ public class WaveShakeView extends View{
         int x = 0;
         int y = 0;
 
-        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-
-        //第一条曲线
+        //第一条主曲线
         path.reset();
         for (int i = 0; i < mWidth; i++) {
             x = i;
@@ -120,7 +125,7 @@ public class WaveShakeView extends View{
         path.reset();
         for (int i = 0; i < mWidth; i++) {
             x = i;
-            y = (int) (A * Math.sin((i * C + mAngle * X + D) * Math.PI / 180) + B);
+            y = (int) (A * Math.sin((i * C + mAngle + D) * Math.PI / 180) + B);
             if (i == 0) {
                 //x=0的时候，即左上角的点，移动画笔于此
                 path.moveTo(x, y);
@@ -134,7 +139,7 @@ public class WaveShakeView extends View{
         path.reset();
         for (int i = 0; i < mWidth; i++) {
             x = i;
-            y = (int) (A * Math.sin((i * C + mAngle * X + 2 * D) * Math.PI / 180) + B);
+            y = (int) (A * Math.sin((i * C + mAngle + 2 * D) * Math.PI / 180) + B);
             if (i == 0) {
                 //x=0的时候，即左上角的点，移动画笔于此
                 path.moveTo(x, y);
@@ -148,7 +153,7 @@ public class WaveShakeView extends View{
         path.reset();
         for (int i = 0; i < mWidth; i++) {
             x = i;
-            y = (int) (A * Math.sin((i * C + mAngle * X + 3 * D) * Math.PI / 180) + B);
+            y = (int) (A * Math.sin((i * C + mAngle + 3 * D) * Math.PI / 180) + B);
             if (i == 0) {
                 //x=0的时候，即左上角的点，移动画笔于此
                 path.moveTo(x, y);
@@ -162,7 +167,7 @@ public class WaveShakeView extends View{
         path.reset();
         for (int i = 0; i < mWidth; i++) {
             x = i;
-            y = (int) (A * Math.sin((i * C + mAngle * X + 4 * D) * Math.PI / 180) + B);
+            y = (int) (A * Math.sin((i * C + mAngle + 4 * D) * Math.PI / 180) + B);
             if (i == 0) {
                 //x=0的时候，即左上角的点，移动画笔于此
                 path.moveTo(x, y);
