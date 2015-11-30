@@ -162,7 +162,7 @@ public class HttpGetProxy {
                 // 监听MediaPlayer的请求，MediaPlayer->代理服务器
                 // --------------------------------------
                 sckPlayer = localServer.accept();
-                Log.e("TAG", "------------------------------------------------------------------");
+                Log.e(TAG, "------------------------------------------------------------------");
                 if (download != null && download.isDownloading())
                     download.stopThread(false);
 

@@ -24,7 +24,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.WindowManager;
@@ -46,7 +45,8 @@ public class VideoOnlineActivity extends Activity implements OnClickListener, On
     //http://ws.a.yximgs.com/upic/2015/07/15/17/BMjAxNTA3MTUxNzQwMjdfMTcwNjM3NjZfMjk5MDE5MjY2XzFfMw==.mp4
     //http://www.androidbegin.com/tutorial/AndroidCommercial.3gp
     //https://github.com/wone/VideoDemo/blob/master/files/test1.mp4
-    public static String VIDEO_URL = "https://github.com/wone/VideoDemo/blob/master/files/test1.mp4";
+    //https://mvvideo5.meitudata.com/5619d7a31de3b3516.mp4
+    public static String VIDEO_URL = "https://mvvideo5.meitudata.com/5619d7a31de3b3516.mp4";
 
     RelativeLayout mRoot;
     SurfaceView mSurfaceView;

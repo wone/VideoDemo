@@ -50,6 +50,7 @@ public class VideoProxyActivity extends Activity implements OnClickListener, OnC
     //http://ws.a.yximgs.com/upic/2015/07/15/17/BMjAxNTA3MTUxNzQwMjdfMTcwNjM3NjZfMjk5MDE5MjY2XzFfMw==.mp4
     //http://www.androidbegin.com/tutorial/AndroidCommercial.3gp
     //https://github.com/wone/VideoDemo/blob/master/files/test1.mp4
+    //https://mvvideo5.meitudata.com/5619d7a31de3b3516.mp4
     public static String VIDEO_URL = "http://ws.a.yximgs.com/upic/2015/07/15/17/BMjAxNTA3MTUxNzQwMjdfMTcwNjM3NjZfMjk5MDE5MjY2XzFfMw==.mp4";
 
     RelativeLayout mRoot;
@@ -464,13 +465,13 @@ public class VideoProxyActivity extends Activity implements OnClickListener, OnC
                 String mp4Url = urls[0];
                 mProxyUrl = urls[1];
 
-                try {
-                    String prebufferFilePath = mProxy.prebuffer(mp4Url,
-                            5 * 1024 * 1024);
-                    Log.e(TAG, "预加载文件：" + prebufferFilePath);
-                } catch (Exception ex) {
-                    Log.e(TAG, "", ex);
-                }
+//                try {
+//                    String prebufferFilePath = mProxy.prebuffer(mp4Url,
+//                            5 * 1024 * 1024);
+//                    Log.e(TAG, "预加载文件：" + prebufferFilePath);
+//                } catch (Exception ex) {
+//                    Log.e(TAG, "", ex);
+//                }
 
                 mHandler.postDelayed(new Runnable() {
                     @Override
@@ -482,7 +483,7 @@ public class VideoProxyActivity extends Activity implements OnClickListener, OnC
                             play(0);
                         }
                     }
-                }, 3000);
+                }, 0);
 
             }
         }).start();

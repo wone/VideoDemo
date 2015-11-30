@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +21,7 @@ public class WaveShakeView extends View{
     public static final int ANIMATION_MOVING = 2;
     public static final int ANIMATION_END = 3;
 
+
     private int mAinmationStep = ANIMATION_NONE;
 
     private Paint mPaint1;
@@ -35,7 +35,6 @@ public class WaveShakeView extends View{
     public WaveShakeView(Context context){
         super(context);
         init();
-
     }
 
     public WaveShakeView(Context context, AttributeSet attrs){
@@ -55,14 +54,12 @@ public class WaveShakeView extends View{
         mPaint1.setStyle(Paint.Style.STROKE);
 
         mPaint2 = new Paint();
-        mPaint2.setColor(Color.GRAY);
+        mPaint2.setColor(0xFFD7D7D7);
         mPaint2.setAntiAlias(true);
         mPaint2.setStrokeWidth(1);
         mPaint2.setStyle(Paint.Style.STROKE);
 
         mPath = new Path();
-
-        setBackgroundColor(Color.BLACK);
     }
 
 
@@ -96,7 +93,7 @@ public class WaveShakeView extends View{
         if (mAinmationStep != ANIMATION_NONE) {
             drawWave(canvas, mPath);
         } else {
-            canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+            canvas.drawColor(0x00000000);
         }
 
         long cost = System.currentTimeMillis() - start;

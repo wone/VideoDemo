@@ -125,7 +125,7 @@ public class VideoDownloadActivity extends Activity implements OnClickListener, 
     private long mediaLength = 0;
     private long readSize = 0;
 
-    private static final int READY_BUFF = 200 * 1024;//200 kb
+    private static final int READY_BUFF = 100 * 1024;//200 kb
     private static final int CACHE_BUFF = 100 * 1024; //100 kb
 
     private final static int VIDEO_STATE_UPDATE = 0;
