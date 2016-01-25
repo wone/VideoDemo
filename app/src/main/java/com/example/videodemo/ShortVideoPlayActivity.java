@@ -826,6 +826,7 @@ public class ShortVideoPlayActivity extends Activity implements OnClickListener,
 			break;
 		case PLAY_STATE_PLAYING:
 			pause();
+			showInfoLayout(true);
 			break;
 		case PLAY_STATE_PAUSE:
             resume();
@@ -843,16 +844,19 @@ public class ShortVideoPlayActivity extends Activity implements OnClickListener,
 		case R.id.surfaceView:
 
             Log.d(TAG,  "onClick surfaceView, mHidden=" + mHidden);
-
+//			if (mHidden) {
+//				startShowing();
+//				delayStartHiding();
+//			} else {
+//				startHiding();
+//			}
 			if (mHidden) {
-//				if (mPlayState == PLAY_STATE_PLAYING) {
-//					pause();
-//				}
-				startShowing();
-				delayStartHiding();
-			} else {
-				startHiding();
+				mOperatorBar.setVisibility(View.VISIBLE);
+				mTitleBar.setVisibility(View.VISIBLE);
 			}
+//			pause();
+			showInfoLayout(true);
+
 			break;
 		case R.id.operatorBtn:
 			handleClick();
@@ -896,6 +900,23 @@ public class ShortVideoPlayActivity extends Activity implements OnClickListener,
 		super.onBackPressed();
 		
 //		overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+	}
+
+	private void showInfoLayout(boolean show){
+		View view = this.findViewById(R.id.infoLayout);
+		if (show)  {
+			view.setVisibility(View.VISIBLE);
+			ImageView closeBtn = (ImageView) findViewById(R.id.closeBtn);
+			view.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					showInfoLayout(false);
+//					resume();
+				}
+			});
+		} else {
+			view.setVisibility(View.GONE);
+		}
 	}
 
 }

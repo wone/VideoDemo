@@ -46,7 +46,7 @@ public class WaveViewActivity extends Activity {
             }
         });
 
-        mAudioAnimView.startAnimation();
+//        mAudioAnimView.startAnimation();
 
         RelativeLayout root = (RelativeLayout) this.findViewById(R.id.root);
 

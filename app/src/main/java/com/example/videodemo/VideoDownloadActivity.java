@@ -51,7 +51,8 @@ public class VideoDownloadActivity extends Activity implements OnClickListener, 
 
     public static String URL1= "http://ws.a.yximgs.com/upic/2015/07/15/17/BMjAxNTA3MTUxNzQwMjdfMTcwNjM3NjZfMjk5MDE5MjY2XzFfMw==.mp4";
     public static String URL2 = "http://www.androidbegin.com/tutorial/AndroidCommercial.3gp";
-    public static String VIDEO_URL = URL1;
+    public static String URL3 = "https://mvvideo5.meitudata.com/5619d7a31de3b3516.mp4";
+    public static String VIDEO_URL = URL3;
 
     private String mLocalUrl = Environment.getExternalStorageDirectory()
             .getAbsolutePath()
@@ -111,7 +112,7 @@ public class VideoDownloadActivity extends Activity implements OnClickListener, 
 
     private ProgressDialog mDialog;
 
-
+    private TextView mBackBtn;
     private TextView mInfoText;
 
     private TextView mLoadingText;
@@ -160,7 +161,7 @@ public class VideoDownloadActivity extends Activity implements OnClickListener, 
                         int minute = i / 60 % 60;
                         int second = i % 60;
 
-                        s += String.format(" 播放: %02d:%02d:%02d [%.2f%%]", hour,
+                        s += String.format("播放: %02d:%02d:%02d [%.2f%%]", hour,
                                 minute, second, playpercent);
 
                         mInfoText.setText(s);
@@ -169,7 +170,7 @@ public class VideoDownloadActivity extends Activity implements OnClickListener, 
                     break;
 
                 case CACHE_VIDEO_READY:
-                    Log.d(TAG, "handleMessage CACHE_VIDEO_READY");
+                    Log.e(TAG, "handleMessage CACHE_VIDEO_READY");
                     isready = true;
 
                     play(0);
@@ -320,6 +321,8 @@ public class VideoDownloadActivity extends Activity implements OnClickListener, 
         mOperatorBar = findViewById(R.id.operatorBar);
         mCoverIV = (ImageView) findViewById(R.id.coverIV);
         mLoadingText = (TextView) findViewById(R.id.loadingText);
+        mBackBtn =(TextView) findViewById(R.id.backBtn);
+        mBackBtn.setOnClickListener(this);
 
         mMenuBtn = (ImageView) findViewById(R.id.menuBtn);
         mMenuBtn.setOnClickListener(this);
@@ -606,7 +609,7 @@ public class VideoDownloadActivity extends Activity implements OnClickListener, 
                         }
                     }
 
-                    Log.d(TAG, "video download finish...");
+                    Log.e(TAG, "video download finish...");
                     mHandler.sendEmptyMessage(CACHE_VIDEO_END);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -785,7 +788,7 @@ public class VideoDownloadActivity extends Activity implements OnClickListener, 
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.d(TAG, "MediaPlayer onCompletion");
+        Log.e(TAG, "MediaPlayer onCompletion");
 
 //        mSeekBar.setProgress(mDuration);
 //
@@ -1038,6 +1041,9 @@ public class VideoDownloadActivity extends Activity implements OnClickListener, 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.backBtn:
+                finish();
+                break;
             case R.id.surfaceView:
 
                 Log.d(TAG, "onClick surfaceView, mHidden=" + mHidden);

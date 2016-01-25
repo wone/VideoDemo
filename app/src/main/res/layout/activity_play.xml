@@ -29,11 +29,12 @@
     -->
     <TextView
         android:id="@+id/infoText"
-        android:textColor="#cccccc"
-        android:layout_width="wrap_content"
+        android:textColor="#ccFFFFFF"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_margin="100dp"
+        android:layout_marginTop="150dp"
+        android:layout_centerHorizontal="true"
         />
 
     <ImageView
@@ -57,9 +58,20 @@
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_alignParentTop="true"
-        android:background="#cc222222"
+        android:background="#00222222"
         android:visibility="invisible"
         >
+        <TextView
+            android:id="@+id/backBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="20dp"
+            android:layout_centerVertical="true"
+            android:text="关闭"
+            android:textSize="18sp"
+            />
+
         <TextView 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -75,7 +87,7 @@
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_alignParentBottom="true"
-        android:background="#cc222222"
+        android:background="#00222222"
         android:visibility="invisible" >
 
         <ImageView
@@ -126,6 +138,95 @@
             android:text="0:00/0:00"
             android:textColor="#999999"
             android:textSize="11dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="visible"
+        android:id="@+id/infoLayout">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/zxw_close"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:id="@+id/closeBtn"
+            android:visibility="gone"
+            />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/zxw_kr"
+            android:id="@+id/icon"
+            android:layout_marginTop="230dp"
+            android:layout_marginLeft="15dp"
+            android:layout_alignParentLeft="true"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="36Kr"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            android:id="@+id/authorText"
+            android:layout_marginTop="230dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/icon"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="关注"
+            android:textSize="21sp"
+            android:id="@+id/fanText"
+            android:layout_marginTop="230dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/authorText"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@+id/authorText"
+            android:id="@+id/titleText"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            android:text="三星Galaxy Note 5 测评，你所不知道的三星传奇"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@+id/titleText"
+            android:id="@+id/timeText"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            android:text="时间：2016-01-23  播放：2323"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_below="@+id/timeText"
+            android:id="@+id/contentText"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            android:singleLine="false"
+            android:visibility="gone"
+            android:text="据外媒报道，第二代Apple Watch推出前，三星Gear S5将通过iOS版Gear Manager应用与iPhone相连，三星主动靠近老对手，除了寄希望开放蚕食封闭，更可能是三星智能手表链接设备的第一步:尽可能多的去链接手机。"
+            />
+
     </RelativeLayout>
 
 </RelativeLayout>

@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -61,6 +62,8 @@ public class AudioAnimationView extends View{
 
     private Handler mAnimationHandler = new Handler();
 
+    private Drawable mIcon;
+
     public AudioAnimationView(Context context){
         super(context);
         init();
@@ -96,14 +99,20 @@ public class AudioAnimationView extends View{
         mR6 = new Rect();
 
         updateValue();
+
+        mIcon = mRes.getDrawable(R.drawable.ptv_voice);
+        mIcon.setBounds(0, 0, mIcon.getIntrinsicWidth(), mIcon.getIntrinsicHeight());
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-        int measuredWidth = 6 * mRectWidth + 5 * mRectInterval;
-        int measureHeight = H;
+        int measuredWidth = mRunning ? 6 * mRectWidth + 5 * mRectInterval : mIcon.getIntrinsicWidth();
+        int measureHeight = mRunning ? H : mIcon.getIntrinsicHeight();
+
+        Log.d(TAG, "onMeasure(): measuredWidth = " + measuredWidth + ", measureHeight=" + measureHeight);
+
         setMeasuredDimension(measuredWidth, measureHeight);
     }
 
@@ -111,21 +120,26 @@ public class AudioAnimationView extends View{
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Log.d(TAG, "onDraw()");
+        Log.d(TAG, "onDraw(): mRunning = " + mRunning);
 
-        mR1.set(0, mH1, mRectWidth, H - mH1);
-        mR2.set(mRectWidth*1 + mRectInterval,       mH2,     mRectWidth*2 + mRectInterval,   H-mH2);
-        mR3.set(mRectWidth*2 + mRectInterval*2,     mH3,     mRectWidth*3 + mRectInterval*2, H-mH3);
-        mR4.set(mRectWidth * 3 + mRectInterval * 3, mH4, mRectWidth * 4 + mRectInterval * 3, H-mH4);
-        mR5.set(mRectWidth * 4 + mRectInterval * 4, mH5, mRectWidth * 5 + mRectInterval * 4, H-mH5);
-        mR6.set(mRectWidth * 5 + mRectInterval * 5, mH5, mRectWidth * 6 + mRectInterval * 5, H-mH5);
+        if (mRunning) {
+            mR1.set(0, mH1, mRectWidth, H - mH1);
+            mR2.set(mRectWidth*1 + mRectInterval,       mH2,     mRectWidth*2 + mRectInterval,   H-mH2);
+            mR3.set(mRectWidth*2 + mRectInterval*2,     mH3,     mRectWidth*3 + mRectInterval*2, H-mH3);
+            mR4.set(mRectWidth * 3 + mRectInterval * 3, mH4, mRectWidth * 4 + mRectInterval * 3, H-mH4);
+            mR5.set(mRectWidth * 4 + mRectInterval * 4, mH5, mRectWidth * 5 + mRectInterval * 4, H-mH5);
+            mR6.set(mRectWidth * 5 + mRectInterval * 5, mH5, mRectWidth * 6 + mRectInterval * 5, H-mH5);
 
-        canvas.drawRect(mR1, mPaint);
-        canvas.drawRect(mR2, mPaint);
-        canvas.drawRect(mR3, mPaint);
-        canvas.drawRect(mR4, mPaint);
-        canvas.drawRect(mR5, mPaint);
-        canvas.drawRect(mR6, mPaint);
+            canvas.drawRect(mR1, mPaint);
+            canvas.drawRect(mR2, mPaint);
+            canvas.drawRect(mR3, mPaint);
+            canvas.drawRect(mR4, mPaint);
+            canvas.drawRect(mR5, mPaint);
+            canvas.drawRect(mR6, mPaint);
+        } else {
+            mIcon.draw(canvas);
+        }
+
     }
 
     public static int dp2px(int dp, Resources res){
@@ -169,6 +183,7 @@ public class AudioAnimationView extends View{
     public void stopAnimation(){
         mRunning = false;
         mAnimationHandler.removeCallbacksAndMessages(null);
+        requestLayout();
         Log.d(TAG, "stopAnimation()");
     }
 
